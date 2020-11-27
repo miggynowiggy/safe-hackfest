@@ -4,7 +4,9 @@
       <v-col lg="6" md="12" sm="12">
         <v-text-field
           v-model="search"
-          outlined dense rounded
+          outlined
+          dense
+          rounded
           placeholder="serach..."
           prepend-inner-icon="search"
         ></v-text-field>
@@ -27,7 +29,7 @@
               rounded
               @click="toggle"
             >
-            {{ filter }}
+              {{ filter }}
             </v-btn>
           </v-slide-item>
         </v-slide-group>
@@ -41,18 +43,16 @@ export default {
   name: "SearchAndFilter",
   data: () => ({
     search: null,
-    search_filters: ['Services', 'Events', 'Support Groups', 'Campaigns'],
+    search_filters: ["Services", "Events", "Support Groups", "Campaigns"],
     filter: []
   }),
-  methods: {
-    
-  },
+  methods: {},
   watch: {
     filter(val) {
-      console.log(val)
+      console.log(val);
     }
   }
-}
+};
 </script>
 <style scoped>
 .border-rounded {
