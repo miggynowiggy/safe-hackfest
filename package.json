@@ -4,8 +4,14 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "deploy": "yarn build && firebase deploy"
   },
+  "contributors": [
+    { "name": "Jerico Contreras" },
+    { "name": "Vince Isip" },
+    { "name": "Juan Miguel Mendoza" }
+  ],
   "dependencies": {
     "core-js": "^3.6.5",
     "firebase": "^8.1.1",
