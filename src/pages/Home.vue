@@ -40,7 +40,7 @@ export default {
   },
   name: "Home",
   async created() {
-    await this.$store.dispatch('GET_ALL_POST');
+    await this.$store.dispatch('posts/LISTEN_TO_POSTS');
   },
   data: () => ({
     
@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     posts() {
-      return this.$store.getters['GET_ALL_POST'];
+      return this.$store.getters['posts/GET_ALL_POST'];
     }
   }
 }

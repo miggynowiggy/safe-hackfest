@@ -20,7 +20,7 @@
               Mental health-related products and services from legitimate
               service providers are now available in a single platform.
             </p>
-            <v-btn class="my-3 text-none" color="secondary" x-large rounded
+            <v-btn class="my-3 text-none" color="secondary" x-large rounded @click="goToLogin"
               >Get Started</v-btn
             >
           </div>
@@ -77,6 +77,16 @@
     </v-container>
   </div>
 </template>
+<script>
+export default {
+  name: "LandingPage",
+  methods: {
+    goToLogin() {
+      this.$router.push({ name: "Home" });
+    }
+  }
+}
+</script>
 
 <style scoped>
 .banner-color {
