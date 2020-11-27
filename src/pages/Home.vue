@@ -1,38 +1,35 @@
 <template>
   <div>
-    <nav-bar></nav-bar>
+    <nav-bar />
     <v-main>
-      <v-container fluid>
-        <search-and-filter></search-and-filter>
-      </v-container>
-      <v-container fluid>
-        <v-row align="center" justify="center">
-          <v-col
+      <v-container>
+        <search-and-filter />
+        <masonry
+          class="my-10"
+          :gutter="{ default: '30px' }"
+          :cols="{ default: 4, 1264: 3, 960: 2, 600: 1 }"
+        >
+          <post-card
+            :post="post"
             v-for="post in posts"
             :key="post.id"
-            xl="4"
-            lg="3"
-            md="2"
-            sm="1" 
-          >
-            <post-card :post="post" @openPost="openPostDialog"></post-card>
-          </v-col>
-        </v-row>
+            @openPost="openPostDialog"
+          />
+        </masonry>
       </v-container>
-
-      <full-post ref="postDialog"></full-post>
+      <full-post ref="postDialog" />
     </v-main>
   </div>
 </template>
 
 <script>
-import SearchAndFilter from '@/components/SearchAndFilter.vue';
-import NavBar from '@/components/NavBar.vue';
-import PostCard from '@/components/PostCard.vue';
-import FullPost from '@/components/FullPost.vue';
+import SearchAndFilter from "@/components/SearchAndFilter.vue";
+import NavBar from "@/components/NavBar.vue";
+import PostCard from "@/components/PostCard.vue";
+import FullPost from "@/components/FullPost.vue";
 
 export default {
-  components: { 
+  components: {
     SearchAndFilter,
     NavBar,
     PostCard,
@@ -40,11 +37,11 @@ export default {
   },
   name: "Home",
   async created() {
-    await this.$store.dispatch('GET_ALL_POST');
+    await this.$store.dispatch("posts/LISTEN_TO_POSTS");
   },
-  data: () => ({
-    
-  }),
+  data: function() {
+    return {};
+  },
   methods: {
     async openPostDialog(post) {
       this.$refs.postDialog.openDialog(post);
@@ -52,12 +49,10 @@ export default {
   },
   computed: {
     posts() {
-      return this.$store.getters['GET_ALL_POST'];
+      return this.$store.getters["posts/GET_ALL_POST"];
     }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
