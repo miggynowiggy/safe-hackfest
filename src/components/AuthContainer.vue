@@ -1,15 +1,17 @@
 <template>
-  <div class="bg-color d-flex justify-center align-start">
+  <div class="gradient-theme d-flex justify-center align-start">
     <v-card width="450" class="pa-8 my-10">
-      <div class="d-flex align-center justify-center">
-        <div class="mr-3">
-          <v-img :src="require('@/assets/img/safe-logo.svg')" width="35px" />
+      <div @click="goToHomepage" class="pointer-cursor">
+        <div class="d-flex align-center justify-center">
+          <div class="mr-3">
+            <v-img :src="require('@/assets/img/safe-logo.svg')" width="35px" />
+          </div>
+          <span class="primary--text text-h4 font-weight-semibold">Safe</span>
         </div>
-        <span class="primary--text text-h4 font-weight-semibold">SAFE</span>
+        <span class="text-caption text-center d-block">
+          Online Mental Health Services Directory
+        </span>
       </div>
-      <span class="text-caption text-center d-block">
-        Online Mental Health Services Directory
-      </span>
       <v-tabs
         :value="0"
         background-color="transparent"
@@ -32,14 +34,11 @@ export default {
       const tabs = ["Login", "Signup"];
       return tabs.indexOf(this.$route.name);
     }
+  },
+  methods: {
+    goToHomepage() {
+      this.$router.push({ name: "Home" });
+    }
   }
 };
 </script>
-
-<style scoped>
-.bg-color {
-  background-color: #9921e8;
-  background-image: linear-gradient(315deg, #9921e8 0%, #5f72be 74%);
-  height: 100%;
-}
-</style>

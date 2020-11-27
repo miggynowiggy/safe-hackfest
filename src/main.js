@@ -1,11 +1,17 @@
-import Vue from 'vue'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
-import store from './store'
-import vuetify from './plugins/vuetify';
-import { AUTH } from './config/firebase';
+import Vue from "vue";
+import App from "./App.vue";
+import "./registerServiceWorker";
+import router from "./router";
+import store from "./store";
+import vuetify from "./plugins/vuetify";
+import { morphTruncate, morphDateFormat } from "vue-morphling";
+import VueMasonry from "vue-masonry-css";
+import { AUTH } from "./config/firebase";
 Vue.config.productionTip = false;
+
+Vue.use(morphTruncate);
+Vue.use(morphDateFormat);
+Vue.use(VueMasonry);
 
 let app;
 AUTH.onAuthStateChanged(async (user) => {
@@ -17,7 +23,6 @@ AUTH.onAuthStateChanged(async (user) => {
         console.log(e);
         throw e;
       }
-
       app = new Vue({
         router,
         store,
