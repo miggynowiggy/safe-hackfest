@@ -7,7 +7,7 @@
           outlined
           dense
           rounded
-          placeholder="serach..."
+          placeholder="search..."
           prepend-inner-icon="search"
         ></v-text-field>
       </v-col>
