@@ -2,12 +2,13 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 
 //import {routeName} from "./routes"
-import { homepage } from "./routes";
+import { landingpage, homepage } from "./routes";
 
 Vue.use(VueRouter);
 
 const routes = [
   //...routeName
+  ...landingpage,
   ...homepage
 ];
 
