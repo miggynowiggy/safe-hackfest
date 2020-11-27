@@ -67,10 +67,8 @@ export default {
 
               if(change.type === 'added') {
                 commit('ADD_TO_POST_LIST', post);
-
               } else if(change.type === 'modified') {
                 commit('UPDATE_TO_POST_LIST', post);
-
               } else if(change.type === 'removed') {
                 commit('REMOVE_TO_POST_LIST', post);
               }

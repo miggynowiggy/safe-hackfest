@@ -14,7 +14,6 @@ Vue.use(morphDateFormat);
 Vue.use(VueMasonry);
 
 let app;
-
 AUTH.onAuthStateChanged(async (user) => {
 	if (!app) {
 		if (user) {
@@ -24,7 +23,6 @@ AUTH.onAuthStateChanged(async (user) => {
         console.log(e);
         throw e;
       }
-
       app = new Vue({
         router,
         store,
