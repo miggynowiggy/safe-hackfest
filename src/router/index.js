@@ -1,15 +1,29 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-//import {routeName} from "./routes"
-import { landingpage, homepage } from "./routes";
-
 Vue.use(VueRouter);
 
 const routes = [
-  //...routeName
-  ...landingpage,
-  ...homepage
+  {
+    path: "/home",
+    name: "Home",
+    component: () => import("@/pages/Home")
+  },
+  {
+    path: "/",
+    name: "Landing Page",
+    component: () => import("@/pages/LandingPage")
+  },
+  {
+    path: "/signup",
+    name: "Signup",
+    component: () => import("@/pages/Signup")
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/pages/Login")
+  }
 ];
 
 const router = new VueRouter({

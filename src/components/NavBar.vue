@@ -8,7 +8,7 @@
 
     <v-spacer></v-spacer>
 
-    <v-menu bottom left offset-y="40">
+    <v-menu bottom left offset-y>
       <template v-slot:activator="{ on, attr }">
         <v-btn icon large v-bind="attr" v-on="on">
           <v-icon>fa-user-circle</v-icon>
@@ -40,7 +40,7 @@
 export default {
   name: "NavBar",
   data: () => ({
-    isLoggedIn: false
+    isLoggedIn: false,
   }),
   methods: {
     register() {
@@ -56,8 +56,8 @@ export default {
     logout() {
       this.isLoggedIn = false;
       window, alert("logout clicked");
-    }
-  }
+    },
+  },
 };
 </script>
 

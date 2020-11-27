@@ -4,16 +4,16 @@ import clone from "lodash/cloneDeep";
 export default {
   namespaced: true,
   state: {
-    user: {}
+    user: {},
   },
   getters: {
-    GET_USER: state => state.user
+    GET_USER: (state) => state.user,
   },
   mutations: {
     SET_USER(state, payload) {
       state.user = clone(payload);
     },
-    DELETE_USER: state => (state.user = null)
+    DELETE_USER: (state) => (state.user = null),
   },
   actions: {
     async signUp({ commit }, { email, password }) {
@@ -41,6 +41,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    }
-  }
+    },
+  },
 };

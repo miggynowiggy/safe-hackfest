@@ -16,3 +16,9 @@ export default {
   background-color: #eff1f5 !important;
 }
 </style>
+
+<style>
+.pointer-cursor {
+  cursor: pointer;
+}
+</style>
