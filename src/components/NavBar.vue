@@ -16,11 +16,11 @@
       </template>
 
       <v-list v-if="!isLoggedIn">
-        <v-list-item ripple @click="register">
-          <v-list-item-title>Register</v-list-item-title>
-        </v-list-item>
         <v-list-item ripple @click="login">
           <v-list-item-title>Login</v-list-item-title>
+        </v-list-item>
+        <v-list-item ripple @click="register">
+          <v-list-item-title>Register</v-list-item-title>
         </v-list-item>
       </v-list>
 
@@ -37,27 +37,31 @@
 </template>
 
 <script>
+import { AUTH } from '@/config/firebase';
+
 export default {
   name: "NavBar",
-  data: () => ({
-    isLoggedIn: false,
-  }),
   methods: {
     register() {
-      window.alert("register clicked");
+      this.$router.push({ name: "Signup" })
     },
     login() {
-      this.isLoggedIn = true;
-      window, alert("login clicked");
+      this.$router.push({ name: "Login" })
     },
     viewProfile() {
       window.alert("profile clicked");
     },
-    logout() {
-      this.isLoggedIn = false;
-      window, alert("logout clicked");
+    async logout() {
+      await this.$store.dispatch("auth/LOGOUT");
+      this.$router.push({ name: "Landing Page" });
     },
   },
+  computed: {
+    isLoggedIn() {
+      const user = AUTH.currentUser;
+      return user ? true : false;
+    }
+  }
 };
 </script>
 

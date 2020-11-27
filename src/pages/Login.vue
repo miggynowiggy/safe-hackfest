@@ -44,7 +44,9 @@
         </div>
 
         <div class="my-3 d-flex justify-center">
-          <v-btn class="text-none mx-2" small color="#EA4335" dark>
+          <v-btn class="text-none mx-2" small color="#EA4335" dark @click="loginThroughGoogle"
+            :loading="googleLoading"
+          >
             <v-icon v-text="'mdi-gmail'" size="16" left />
             Gmail
           </v-btn>
@@ -82,7 +84,8 @@ export default {
         }
       },
       data: { email: null, password: null },
-      showPassword: false
+      showPassword: false,
+      googleLoading: false,
     };
   },
   methods: {
@@ -94,6 +97,18 @@ export default {
       this.loginFields["password"]["append"] = this.showPassword
         ? "fa-eye-slash"
         : "fa-eye";
+    },
+    async loginThroughGoogle() {
+      try {
+        this.googleLoading = true;
+        await this.$store.dispatch("auth/USE_GOOGLE_AUTH");
+        this.googleLoading = false;
+        this.$router.push({ name: "Home" });
+        
+      } catch(error) {
+        this.googleLoading = false;
+        throw error;
+      }
     }
   }
 };
