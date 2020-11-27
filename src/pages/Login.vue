@@ -6,6 +6,7 @@
           <form-label :text="field['label']" />
           <v-text-field
             v-model="data[key]"
+            @keypress.enter="loginThroughEmailAndPassword"
             :type="field.type"
             class="text-body-2"
             color="primary"
@@ -34,7 +35,14 @@
             </template>
           </v-text-field>
         </div>
-        <v-btn class="my-8 text-none" color="secondary" block>Login</v-btn>
+        <v-btn
+          class="my-8 text-none"
+          color="secondary"
+          @click="loginThroughEmailAndPassword"
+          :loading="loginBtnLoading"
+          block
+          >Login</v-btn
+        >
       </v-form>
       <div>
         <div class="d-flex align-center">
@@ -44,7 +52,12 @@
         </div>
 
         <div class="my-3 d-flex justify-center">
-          <v-btn class="text-none mx-2" small color="#EA4335" dark @click="loginThroughGoogle"
+          <v-btn
+            class="text-none mx-2"
+            small
+            color="#EA4335"
+            dark
+            @click="loginThroughGoogle"
             :loading="googleLoading"
           >
             <v-icon v-text="'mdi-gmail'" size="16" left />
@@ -57,6 +70,15 @@
         </div>
       </div>
     </div>
+    <v-snackbar
+      v-model="snackBarState"
+      top
+      right
+      dark
+      rounded
+      color="error"
+      :timeout="5000"
+    >{{ snackBarMessage }}</v-snackbar>
   </auth-container>
 </template>
 
@@ -86,6 +108,9 @@ export default {
       data: { email: null, password: null },
       showPassword: false,
       googleLoading: false,
+      loginBtnLoading: false,
+      snackBarMessage: null,
+      snackBarState: false
     };
   },
   methods: {
@@ -104,9 +129,24 @@ export default {
         await this.$store.dispatch("auth/USE_GOOGLE_AUTH");
         this.googleLoading = false;
         this.$router.push({ name: "Home" });
-        
-      } catch(error) {
+      } catch (error) {
         this.googleLoading = false;
+        this.snackBarState = true;
+        this.snackBarMessage = error.message;
+        throw error;
+      }
+    },
+    async loginThroughEmailAndPassword() {
+      try {
+        this.loginBtnLoading = true;
+        await this.$store.dispatch("auth/LOGIN", this.data);
+        this.data = { email: null, password: null };
+        this.loginBtnLoading = false;
+        this.$router.push({ name: "Home" });
+      } catch (error) {
+        this.loginBtnLoading = false;
+        this.snackBarState = true;
+        this.snackBarMessage = error.message;
         throw error;
       }
     }

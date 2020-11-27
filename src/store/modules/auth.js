@@ -32,8 +32,8 @@ export default {
         }
         
         const createdUser = await AUTH.createUserWithEmailAndPassword(email, password);
-        await DB.collection("users").doc(createdUser.uid).set({ name, email, type, savedPosts: [] });
-        commit("SET_USER", { name, email, type, savedPosts: [] });
+        await DB.collection("users").doc(createdUser.uid).set({ name, email, type });
+        commit("SET_USER", { name, email, type });
         return true;
 
       } catch (error) {
@@ -44,8 +44,10 @@ export default {
       try {
         const user = await AUTH.signInWithEmailAndPassword(email, password);
         const userRef = await DB.collection("users").doc(user.uid).get();
-        const userData = userRef.data();
-        userData.id = userRef.id;
+        const userData = {
+          ... userRef.data(),
+          id: userRef.id
+        };
         commit("SET_USER", userData);
         return true;
 
@@ -70,20 +72,21 @@ export default {
     async RELOAD_USER({ commit }, uid) {
       try {
         const user = await DB.collection("users").doc(uid).get();
-        const data = user.data();
-        data.id = user.id;
+        let data = {
+          ...user.data(),
+          id: user.id
+        };
         commit("SET_USER", data);
         return true;
         
       } catch(error) {
-        AUTH.signOut();
         throw error;
       }
     },
     async USE_GOOGLE_AUTH({ commit }) {
       try {
         const provider = new FB.auth.GoogleAuthProvider();
-        const result = await AUTH.signInWithRedirect(provider);
+        const result = await AUTH.signInWithPopup(provider);
         const uid = result.user.uid
         let user = {
           name: result.user.displayName,
@@ -99,8 +102,10 @@ export default {
           commit('SET_USER', user);
 
         } else {
-          const data = existingUser.data();
-          data.id = existingUser.id;
+          const data = {
+            ...existingUser.data(),
+            id: existingUser.id
+          }
           commit('SET_USER', data);
         }
         return true;

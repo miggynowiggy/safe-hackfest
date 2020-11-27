@@ -10,23 +10,31 @@ Vue.config.productionTip = false;
 let app;
 AUTH.onAuthStateChanged(async (user) => {
 	if (!app) {
-    app = new Vue({
-      router,
-      store,
-      vuetify,
-      render: h => h(App)
-    }).$mount('#app')
-
 		if (user) {
-			try {
+      try {
 				await store.dispatch("auth/RELOAD_USER", user.uid);
 			} catch (e) {
         console.log(e);
         throw e;
-			}
+      }
+
+      app = new Vue({
+        router,
+        store,
+        vuetify,
+        render: h => h(App)
+      }).$mount('#app')
+
       router.push({ name: "Home" });
 
 		} else {
+      app = new Vue({
+        router,
+        store,
+        vuetify,
+        render: h => h(App)
+      }).$mount('#app')
+
       router.push({ name: "Landing Page" });
 		}
 	}
