@@ -111,6 +111,7 @@
         color="secondary"
         block
         :loading="registerLoading"
+        :disabled="!user['isAgree']&&!provider['isAgree']"
         @click="register"
         >Signup</v-btn
       >
@@ -170,11 +171,11 @@ export default {
       user: {
         firstName: null,
         lastName: null,
-        email: null,
-        password: null,
+        email: "",
+        password: "",
         isAgree: null
       },
-      provider: { company: null, email: null, password: null, isAgree: false },
+      provider: { company: null, email: "", password: "", isAgree: null },
       showPassword: false,
       registerLoading: false,
       snackBarState: false,
@@ -205,7 +206,25 @@ export default {
       try {
         this.registerLoading = true;
 
-        if (this.selectedUser === "provider") {
+        let errorMessage;
+
+        if(this.selectedUser === "provider"){
+          if(!this.provider.name)
+            errorMessage = "Company/groups/institution is required.";
+        } else {
+          if(!this.user.firstName)
+            errorMessage = "First name is required.";
+          else if(!this.user.lastName)
+            errorMessage = "Last name is required.";
+        }
+
+        if (errorMessage) {
+          this.openSnackBar(errorMessage);
+          this.registerLoading = false;
+          return
+        }
+
+        if(this.selectedUser === "provider"){
           await this.$store.dispatch("auth/SIGN_UP", this.provider);
         } else {
           await this.$store.dispatch("auth/SIGN_UP", this.user);
