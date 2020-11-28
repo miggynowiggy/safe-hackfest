@@ -209,7 +209,7 @@ export default {
         let errorMessage;
 
         if(this.selectedUser === "provider"){
-          if(!this.provider.name)
+          if(!this.provider.company)
             errorMessage = "Company/groups/institution is required.";
         } else {
           if(!this.user.firstName)
