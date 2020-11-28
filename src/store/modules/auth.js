@@ -1,4 +1,4 @@
-import { FB, DB, AUTH } from "@/config/firebase";
+import { FB, DB, AUTH, STORAGE } from "@/config/firebase";
 import clone from "lodash/cloneDeep";
 
 const userModel = {
@@ -23,13 +23,13 @@ export default {
 			state.user = clone(payload);
 		},
 		CLEAR_USER(state) {
-      state.user = clone(userModel)
-    },
-    UPDATE_USER(state, newDetails) {
-      Object.keys(newDetails).forEach(key => {
-        state.user[key] = newDetails[key];
-      });
-    }
+			state.user = clone(userModel);
+		},
+		UPDATE_USER(state, newDetails) {
+			Object.keys(newDetails).forEach((key) => {
+				state.user[key] = newDetails[key];
+			});
+		},
 	},
 	actions: {
 		async SIGN_UP({ commit }, user) {
@@ -86,8 +86,8 @@ export default {
 		},
 		async LOGOUT({ commit, dispatch }) {
 			try {
-        await AUTH.signOut();
-        commit("CLEAR_USER");
+				await AUTH.signOut();
+				commit("CLEAR_USER");
 				dispatch("STOP_OBSERVERS");
 				return true;
 			} catch (error) {
@@ -112,20 +112,67 @@ export default {
 				AUTH.signOut();
 				throw error;
 			}
-    },
-    async UPDATE_USER({ state, commit }, {id, newDetails}) {
-      try {
-        if(state.user.email !== newDetails.email) {
-          await AUTH.currentUser.updateEmail(newDetails.email);
-        }
+		},
+		async UPDATE_USER({ state, commit }, { id, newDetails }) {
+			try {
+				if (state.user.email !== newDetails.email) {
+					await AUTH.currentUser.updateEmail(newDetails.email);
+				}
 
-        await DB.collection("users").doc(id).update(newDetails);
-        commit('UPDATE_USER', newDetails);
+				await DB.collection("users")
+					.doc(id)
+					.update(newDetails);
+				commit("UPDATE_USER", newDetails);
+				return true;
+			} catch (error) {
+				throw error;
+			}
+		},
+		async UPDATE_DISPLAY_PHOTO({ state, commit }, { file }) {
+			try {
+        const user = state.user;
+        const fileType = file.type.split("/")[1];
+				const profilePicRef = STORAGE.ref(`/display_picture/${user.id}.${fileType}`);
+				await profilePicRef.put(file);
+				const downloadURL = await profilePicRef.getDownloadURL();
+
+				await DB.collection("users").doc(user.id).update({ 
+          displayPhoto: downloadURL,
+          displayPhotoFormat: fileType 
+        });
+
+				commit("UPDATE_USER", { 
+          displayPhoto: downloadURL, 
+          displayPhotoFormat: fileType 
+        });
         return true;
-      } catch(error) {
-        throw error;
-      }
-    },
+        
+			} catch (error) {
+				throw error;
+			}
+		},
+		async REMOVE_DISPLAY_PHOTO({ state, commit }) {
+			try {
+        const user = state.user;
+        const fileType = state.user.displayPhotoFormat;
+				const profilePicRef = STORAGE.ref(`/display_picture/${user.id}.${fileType}`);
+				await profilePicRef.delete();
+
+				await DB.collection("users").doc(user.id).update({ 
+          displayPhoto: null,
+          displayPhotoFormat: null,
+        });
+
+				commit("UPDATE_USER", {
+					displayPhoto: null,
+					displayPhotoFormat: null,
+				});
+        return true;
+        
+			} catch (error) {
+				throw error;
+			}
+		},
 		async USE_GOOGLE_AUTH({ commit }) {
 			try {
 				const provider = new FB.auth.GoogleAuthProvider();
