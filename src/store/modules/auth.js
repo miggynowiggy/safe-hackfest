@@ -32,7 +32,7 @@ export default {
 		},
 	},
 	actions: {
-		async SIGN_UP({ commit }, user) {
+		async SIGN_UP({ commit, dispatch }, user) {
 			try {
 				const { email, password } = user;
 				let name;
@@ -63,12 +63,13 @@ export default {
 					.set(reference);
 				reference.id = createdUser.user.uid;
 				commit("SET_USER", reference);
+				dispatch("START_OBSERVERS");
 				return true;
 			} catch (error) {
 				throw error;
 			}
 		},
-		async LOGIN({ commit }, { email, password }) {
+		async LOGIN({ commit, dispatch }, { email, password }) {
 			try {
 				const user = await AUTH.signInWithEmailAndPassword(email, password);
 				const userRef = await DB.collection("users")
@@ -79,6 +80,7 @@ export default {
 					id: userRef.id,
 				};
 				commit("SET_USER", userData);
+				dispatch("START_OBSERVERS");
 				return true;
 			} catch (error) {
 				throw error;
@@ -93,6 +95,9 @@ export default {
 			} catch (error) {
 				throw error;
 			}
+		},
+		START_OBSERVERS({ dispatch }) {
+			dispatch("posts/LISTEN_TO_POSTS", null, { root: true });
 		},
 		STOP_OBSERVERS({ commit }) {
 			commit("posts/CLEAR_SUBSCRIBER", null, { root: true });
