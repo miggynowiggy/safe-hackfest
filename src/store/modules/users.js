@@ -10,7 +10,7 @@ export default {
 					.doc(id)
 					.get();
 				const user = userRef.data();
-				user.id = userRef.id;
+				user.id = id;
 				return user;
 			} catch (error) {
 				console.log(error);
