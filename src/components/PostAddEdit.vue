@@ -211,13 +211,11 @@ export default {
   },
   methods: {
     openDialog(post, state) {
-
       this.dialogState = true;
       this.formState = state;
 
       if (post) {
         this.postContent = Object.assign({}, this.postContent, post);
-        this.postContent.mobile = this.user.phoneNumber;
 
       } else {
         Object.keys(this.postContent).forEach(
@@ -226,6 +224,7 @@ export default {
       }
 
       this.$nextTick(() => {
+        this.tempBanner = null;
         this.uploadedBanner = null;
         this.$refs.resetForm.reset();
       });
