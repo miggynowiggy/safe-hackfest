@@ -31,8 +31,6 @@ AUTH.onAuthStateChanged(async user => {
         vuetify,
         render: h => h(App)
       }).$mount("#app");
-
-      router.push({ name: "Home" });
     } else {
       app = new Vue({
         router,

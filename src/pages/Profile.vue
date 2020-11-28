@@ -7,7 +7,7 @@
           <v-col cols="12" md="10" xl="8">
             <profile-info :info="info" @editProfile="editProfileInfo" />
             <div class="my-10">
-              <div class="d-flex align-center" v-if="type === 'provider'">
+              <div class="d-flex align-center" v-if="isUserProvider">
                 <v-icon v-text="'fa-share-square'" class="mr-5" />
                 <span class="text-h6">Recent Posts</span>
               </div>
@@ -16,7 +16,7 @@
                 <span class="text-h6">Saved Posts</span>
               </div>
             </div>
- <!--            <div>
+            <div>
               <masonry
                 class="my-10"
                 :gutter="{ default: '30px' }"
@@ -35,8 +35,8 @@
                   @editPost="editPostContent"
                 />
               </masonry>
-            </div> -->
-            <v-fab-transition v-if="type === 'provider'">
+            </div>
+            <v-fab-transition v-if="isUserProvider">
               <v-btn
                 @click="addPost"
                 class="mr-5 mb-5 py-8 rounded-circle"
@@ -94,31 +94,20 @@ export default {
 
   data() {
     return {
-      type: "provider",
-      posts: [
-        {
-          id: "1",
-          title: "VALENZUELA CITY MENTAL HEALTH AWARENESS",
-          description:
-            "Lorem ipsum dolor sit amet, consectetur adipisicing elit. \
-      ",
-          location: "Valenzuela City, NCR, Philippines",
-          author: "Department of Health",
-          type: "Campaigns",
-          link: "www.valenzuela.gov.ph",
-          datetime: "2020-11-27T23:28",
-          mobile: "09112233445",
-          telephone: "11-2223-43",
-          email: "valenzuela.city@gov.ph",
-          banner:
-            "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-        }
-      ]
+      
     };
   },
   computed: {
     info() {
       return this.$store.getters["auth/GET_USER"];
+    },
+    isUserProvider() {
+      return this.info.type === 'provider';
+    },
+    posts() {
+      return this.isUserProvider 
+        ? this.$store.getters["posts/GET_PROVIDERS_POSTS"] 
+        : this.$store.getters["posts/GET_BOOKMARKED_POSTS"];
     }
   }
 };

@@ -31,6 +31,16 @@ export default {
   getters: {
     GET_SELECTED_POST: state => state.selected_post,
     GET_ALL_POST: state => state.post_list,
+    //Getter for the posts of the provider
+    GET_PROVIDERS_POSTS(state) {
+      const currentUserID = AUTH.currentUser.uid;
+      return state.post_list.filter(post => post.authorID === currentUserID);
+    },
+    //Getter for the bookmarked post of the individual user
+    GET_BOOKMARKED_POSTS(state, getters, rootState, rootGetters) {
+      const currentUser = rootGetters["auth/GET_USER"];
+      return state.post_list.filter(post => currentUser.bookmarks.includes(post.id));
+    },
     GET_FILTER_POST: state =>
       state.post_list.filter(post => state.post_filters.includes(post.type)),
     GET_SEARCH_POST: state =>
@@ -142,7 +152,6 @@ export default {
               if(AUTH.currentUser) {
                 post.isBookmarked = currentUser.bookmarks.includes(post.id);
               }
-              
 
               if (change.type === "added") {
                 commit("ADD_TO_POST_LIST", post);
