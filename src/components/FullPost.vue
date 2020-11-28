@@ -149,10 +149,10 @@ export default {
     }
   },
   computed: {
-    isLoggedIn() {
+    isLoggedIn(){
       return Boolean(AUTH.currentUser);
     },
-    isEvent() {
+    isEvent(){
       return this.post.type === "Event";
     }
   }

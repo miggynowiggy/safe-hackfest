@@ -24,7 +24,7 @@
         <div
           v-else
           style="height:180px"
-          class="primary d-flex-column mx-auto justify-center align-center rounded-t-lg"
+          class="gradient-theme d-flex-column mx-auto justify-center align-center rounded-t-lg"
         >
           <div class="px-4 pt-4 pb-0 d-flex justify-space-between">
             <v-chip
