@@ -15,7 +15,10 @@ const config = {
 };
 
 if (!firebase.apps.length) {
-	firebase.initializeApp(config)
+  firebase.initializeApp(config);
+  firebase.firestore().enablePersistence().catch(error => {
+    console.log(error);
+  });
 }
 
 export const AUTH = firebase.auth();
