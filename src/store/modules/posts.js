@@ -1,7 +1,7 @@
 /* eslint-disable no-empty-pattern */
 /* eslint-disable no-useless-catch */
 import clone from "lodash/cloneDeep";
-import { DB, AUTH } from "@/config/firebase";
+import { DB, AUTH, STORAGE } from "@/config/firebase";
 
 const postModel = {
 	author: {
@@ -153,6 +153,10 @@ export default {
                 post.isBookmarked = currentUser.bookmarks.includes(post.id);
               }
 
+              if(state.selected_post.id === post.id) {
+                commit('SET_SELECTED_POST', post);
+              }
+
               if (change.type === "added") {
                 commit("ADD_TO_POST_LIST", post);
               } else if (change.type === "modified") {
@@ -161,9 +165,7 @@ export default {
                 commit("REMOVE_TO_POST_LIST", post);
               }
 
-              if(state.selected_post.id === post.id) {
-                commit('SET_SELECTED_POST', post);
-              }
+              
             }
           });
         commit("SET_SUBSCRIBER", subscriber);
@@ -173,9 +175,7 @@ export default {
     },
     async GET_POST({}, id) {
       try {
-        const post = await DB.collection("posts")
-          .doc(id)
-          .get();
+        const post = await DB.collection("posts").doc(id).get();
         return {
           ...post.data(),
           id: post.id
@@ -184,33 +184,78 @@ export default {
         throw error;
       }
     },
-    async ADD_POST({}, post) {
+    async ADD_POST({ dispatch }, { content, file }) {
       try {
-        const addPost = await DB.collection("posts")
-          .doc()
-          .set(post);
-        return addPost;
+        content.created_at = Date.now();
+        content.authorID = AUTH.currentUser.uid;
+
+        const addPost = await DB.collection("posts").add(content);
+        const postID = addPost.id;
+        
+        if (file) {
+          await dispatch("UPLOAD_BANNER_PHOTO", {
+            postID,
+            file
+          });
+        }
       } catch (error) {
         throw error;
       }
     },
-    async EDIT_POST({}, post) {
+    async EDIT_POST({ dispatch }, { content, file }) {
       try {
-        const editPost = await DB.collection("posts")
-          .doc(post.id)
-          .update(post);
-        return editPost;
+        await DB.collection("posts").doc(content.id).update(content);
+
+        if (file) {
+					await dispatch("UPLOAD_BANNER_PHOTO", {
+						postID: content.id,
+						file,
+					});
+				}
       } catch (error) {
         throw error;
       }
     },
-    async DELETE_POST({}, post) {
+    async DELETE_POST({ dispatch }, post) {
       try {
-        const deletePost = await DB.collection("posts")
-          .doc(post.id)
-          .delete();
-        return deletePost;
+        await DB.collection("posts").doc(post.id).delete();
+
+        if(post.bannerURL) {
+          await dispatch("REMOVE_BANNER_PHOTO", post);
+        }
       } catch (error) {
+        throw error;
+      }
+    },
+    async UPLOAD_BANNER_PHOTO({}, { postID, file }) {
+      try {
+        const fileType = file.type.split("/")[1];
+				const postPicRef = STORAGE.ref(`/post_pictures/${postID}.${fileType}`);
+				await postPicRef.put(file);
+				const downloadURL = await postPicRef.getDownloadURL();
+
+				await DB.collection("posts").doc(postID).update({ 
+          bannerURL: downloadURL,
+          bannerURLType: fileType
+        });
+
+        return true;
+
+      } catch(error) {
+        throw error;
+      }
+    },
+    async REMOVE_BANNER_PHOTO({}, post) {
+      try {
+        const postPicRef = STORAGE.ref(`/post_pictures/${post.id}.${post.bannerURLType}`);
+				await postPicRef.delete();
+			
+				await DB.collection("posts").doc(post.id).update({
+						bannerURL: null,
+						bannerURLType: null,
+        });
+        return true;
+      } catch(error) {
         throw error;
       }
     }
