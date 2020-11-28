@@ -105,6 +105,11 @@ export default {
     REMOVE_TO_POST_LIST(state, post) {
       const index = state.post_list.findIndex(p => p.id === post.id);
       if (index !== -1) state.post_list.splice(index, 1);
+
+      //Also remove the selected post
+      if(index !== -1 && state.selected_post.id === post.id) {
+        state.selected_post = clone(postModel);
+      }
     },
     CLEAR_SUBSCRIBER(state) {
       if (state.subscriber) {
@@ -153,10 +158,6 @@ export default {
                 post.isBookmarked = currentUser.bookmarks.includes(post.id);
               }
 
-              if(state.selected_post.id === post.id) {
-                commit('SET_SELECTED_POST', post);
-              }
-
               if (change.type === "added") {
                 commit("ADD_TO_POST_LIST", post);
               } else if (change.type === "modified") {
@@ -164,8 +165,6 @@ export default {
               } else if (change.type === "removed") {
                 commit("REMOVE_TO_POST_LIST", post);
               }
-
-              
             }
           });
         commit("SET_SUBSCRIBER", subscriber);
@@ -221,6 +220,7 @@ export default {
         await DB.collection("posts").doc(post.id).delete();
 
         if(post.bannerURL) {
+          post.dontUpdate = true;
           await dispatch("REMOVE_BANNER_PHOTO", post);
         }
       } catch (error) {
@@ -249,11 +249,17 @@ export default {
       try {
         const postPicRef = STORAGE.ref(`/post_pictures/${post.id}.${post.bannerURLType}`);
 				await postPicRef.delete();
-			
-				await DB.collection("posts").doc(post.id).update({
-						bannerURL: null,
-						bannerURLType: null,
+        
+        if(post.hasOwnProperty("dontUpdate") && post.dontUpdate) {
+          //for post document that has been deleted, dont update the document any more
+          return;
+        }
+
+        await DB.collection("posts").doc(post.id).update({
+          bannerURL: null,
+          bannerURLType: null,
         });
+				
         return true;
       } catch(error) {
         throw error;
