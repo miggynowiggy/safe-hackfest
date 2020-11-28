@@ -149,9 +149,16 @@ export default {
       this.$store.commit("posts/SET_SELECTED_POST", this.post);
       this.$emit("editPost", clone(this.post));
     },
-    deletePost() {
-      this.$store.commit("posts/SET_SELECTED_POST", this.post);
-      console.log("this post is deleted.");
+    async deletePost() {
+      try {
+        await this.$store.dispatch("posts/DELETE_POST", this.post);
+        this.dialogState = false;
+        this.$emit("showNotice", "success", "Post deleted!");
+      } catch(error) {
+        this.dialogState = false;
+        this.$emit("showNotice", "error", "Post can't be deleted!");
+        throw error;
+      }
     },
     async bookmarkPost() {
       try {

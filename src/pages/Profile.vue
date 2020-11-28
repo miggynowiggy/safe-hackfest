@@ -58,7 +58,7 @@
     </v-main>
     <full-post ref="postDialog" @editPost="editPostContent" />
     <edit-profile ref="editDialog" @showNotice="toggleSnackbar"/>
-    <post-add-edit ref="postAddEdit" />
+    <post-add-edit ref="postAddEdit" @showNotice="toggleSnackbar"/>
     <v-snackbar
       v-model="snackbarState"
       top
@@ -98,10 +98,10 @@ export default {
       this.$refs.editDialog.openDialog(info);
     },
     addPost() {
-      this.$refs.postAddEdit.openDialog();
+      this.$refs.postAddEdit.openDialog(null, 'add');
     },
     editPostContent(post) {
-      this.$refs.postAddEdit.openDialog(post);
+      this.$refs.postAddEdit.openDialog(post, 'edit');
     },
     toggleSnackbar(type, message) {
       this.snackbarColor = type === 'success' ? 'success' : 'error';
