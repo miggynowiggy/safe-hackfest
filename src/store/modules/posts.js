@@ -16,7 +16,8 @@ const postModel = {
 	authorID: "",
 	location: "",
 	supportLink: "",
-	type: "",
+  type: "",
+  isBookmarked: false
 };
 
 export default {
@@ -84,7 +85,7 @@ export default {
       state.post_list = clone(post_list);
     },
     ADD_TO_POST_LIST(state, post) {
-      state.post_list.push(post);
+      state.post_list.unshift(post);
     },
     UPDATE_TO_POST_LIST(state, post) {
       const index = state.post_list.findIndex(p => p.id === post.id);
@@ -134,7 +135,7 @@ export default {
 
       try {
         const subscriber = DB.collection("posts")
-          .orderBy("created_at", "desc")
+          .orderBy("created_at")
           .onSnapshot(async snapshot => {
             const changes = snapshot.docChanges();
 
@@ -156,6 +157,10 @@ export default {
               //Determine if the post has been bookmarked by the currently logged in user.
               if(AUTH.currentUser) {
                 post.isBookmarked = currentUser.bookmarks.includes(post.id);
+              }
+
+              if(state.selecte_post === post.id) {
+                commit("SET_SELECTED_POST", post);
               }
 
               if (change.type === "added") {
