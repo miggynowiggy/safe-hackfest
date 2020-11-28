@@ -188,8 +188,6 @@ export default {
     async register() {
       try {
         this.registerLoading = true;
-
-        console.log(this.provider);
         if (this.selectedUser === "provider") {
           await this.$store.dispatch("auth/SIGN_UP", this.provider);
         } else {

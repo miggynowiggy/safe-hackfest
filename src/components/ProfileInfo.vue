@@ -1,5 +1,14 @@
 <template>
   <div>
+    <form class="d-none" ref="resetForm">
+      <input
+        type="file"
+        ref="photoFile"
+        accept="image/x-png,image/gif,image/jpeg"
+        @change="onFileSelect"
+      />
+    </form>
+
     <v-card class="pa-10 d-flex flex-column flex-md-row">
       <div class="mr-5 d-flex justify-center d-md-inline">
         <v-badge
@@ -8,7 +17,7 @@
           color="transparent"
           overlap
           offset-x="40"
-          offset-y="40"
+          offset-y="60"
         >
           <v-icon v-if="!info['avatar']" v-text="'fa-user-circle'" size="150" />
           <div v-else>
@@ -18,12 +27,24 @@
           </div>
           <template #badge>
             <v-btn
+              v-if="info['avatar'] || uploadedPhoto"
+              @click="removePhoto"
+              outlined
+              large
+              icon
+              color="primary"
+              style="background-color:#9A12B3; border: 5px solid white"
+            >
+              <v-icon v-text="'fa-times'" size="20" color="white" />
+            </v-btn>
+            <v-btn
+              v-else
               @click="uploadPhoto"
               outlined
               large
               icon
               color="primary"
-              style="background-color:#9A12B3"
+              style="background-color:#9A12B3; border: 5px solid white"
             >
               <v-icon v-text="'fa-camera'" size="20" color="white" />
             </v-btn>
@@ -59,7 +80,7 @@
         <div class="ml-0 mt-5 mt-md-0 ml-md-10 d-flex flex-column">
           <span
             class="text-h5 text-uppercase font-weight-medium"
-            v-text="`${info['firstName']} ${info['lastName']}`"
+            v-text="`${info['author']['name']}`"
           />
           <span class="text-body-2 text--secondary" v-text="info['email']" />
           <div class="d-flex">
@@ -95,67 +116,37 @@
         </v-btn>
       </div>
     </v-card>
-
-    <!-- <div class="my-10">
-      <div class="d-flex align-center">
-        <v-icon v-text="'fa-share-square'" class="mr-5" color="accent" />
-        <span class="text-h6">Recent Posts</span>
-      </div>
-    </div>
-    <div>
-      <masonry
-        class="my-10"
-        :gutter="{ default: '30px' }"
-        :cols="{
-          default: info.posts.length < 4 ? 3 : 4,
-          1264: info.posts.length < 4 ? 2 : 3,
-          960: 2,
-          600: 1
-        }"
-      >
-        <post-card
-          v-for="post in info.posts"
-          :key="post.id"
-          :post="post"
-          @openPost="openPostDialog"
-        />
-      </masonry>
-    </div> -->
-    <v-fab-transition>
-      <v-btn class="mr-5 mb-5" color="primary" fab fixed dark bottom right>
-        <v-icon v-text="'fa-plus'" />
-      </v-btn>
-    </v-fab-transition>
-
-    <full-post ref="postDialog" />
   </div>
 </template>
 
 <script>
-import PostCard from "@/components/PostCard";
-import FullPost from "@/components/FullPost";
-
 export default {
-  components: {
-    PostCard,
-    FullPost
-  },
   props: {
     info: {
       type: Object
     }
   },
   methods: {
-    async openPostDialog(post) {
-      this.$refs.postDialog.openDialog(post);
-    },
     editProfile() {
       console.log(this.info);
       const { posts, ...profileInfo } = this.info;
       this.$emit("editProfile", profileInfo);
     },
     uploadPhoto() {
-      this.$emit("uploadPhoto");
+      this.$refs.photoFile.click();
+    },
+    removePhoto() {
+      if (this.uploadedPhoto) {
+        this.uploadedPhoto = null;
+        this.$refs.resetForm.reset();
+        console.log(this.$refs.photoFile.files[0]);
+        return;
+      }
+      //remove if there is an avatar
+    },
+    onFileSelect(file) {
+      console.log(file.target.files[0]);
+      this.uploadedPhoto = file.target.files[0];
     }
   },
   data() {
@@ -171,7 +162,8 @@ export default {
         mobile: { icon: "fa-mobile-alt" },
         birthday: { icon: "fa-birthday-cake" },
         telephone: { icon: "fa-phone" }
-      }
+      },
+      uploadedPhoto: null
     };
   }
 };
