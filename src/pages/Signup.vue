@@ -111,7 +111,6 @@
         color="secondary"
         block
         :loading="registerLoading"
-        :disabled="!user['isAgree']"
         @click="register"
         >Signup</v-btn
       >
@@ -175,7 +174,7 @@ export default {
         password: null,
         isAgree: null
       },
-      provider: { company: null, email: null, password: null, isAgree: null },
+      provider: { company: null, email: null, password: null, isAgree: false },
       showPassword: false,
       registerLoading: false,
       snackBarState: false,
