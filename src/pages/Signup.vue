@@ -16,6 +16,7 @@
           <div class="mt-3" v-for="(field, key) in providerFields" :key="key">
             <form-label :text="field['label']" />
             <v-text-field
+              v-model="provider[key]"
               class="text-body-2"
               :type="field.type || 'text'"
               color="primary"
@@ -105,7 +106,10 @@
           </v-checkbox>
         </div>
       </div>
-      <v-btn class="mt-8 text-none" color="secondary" block
+      <v-btn
+        class="mt-8 text-none"
+        color="secondary"
+        block
         :loading="registerLoading"
         @click="register"
         >Signup</v-btn
@@ -184,14 +188,16 @@ export default {
     async register() {
       try {
         this.registerLoading = true;
-        if(this.selectedUser === 'provider') {
+
+        console.log(this.provider);
+        if (this.selectedUser === "provider") {
           await this.$store.dispatch("auth/SIGN_UP", this.provider);
         } else {
           await this.$store.dispatch("auth/SIGN_UP", this.user);
         }
         this.registerLoading = false;
         this.$router.push({ name: "Home" });
-      } catch(error) {
+      } catch (error) {
         throw error;
       }
     }
