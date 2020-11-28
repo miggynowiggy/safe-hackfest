@@ -49,7 +49,13 @@ export default {
   },
   computed: {
     posts() {
-      return this.$store.getters["posts/GET_ALL_POST"];
+      // const post_fillist = this.$store.getters["posts/GET_FILTER_POST"];
+
+      // console.log(post_filter_list);
+
+      // return !post_filter_list.length && !post_search_list.length
+      //   ? this.$store.getters["posts/GET_ALL_POST"]
+      return this.$store.getters["posts/GET_SEARCH_AND_FILTER_POST"];
     }
   }
 };

@@ -1,25 +1,56 @@
 /* eslint-disable no-empty-pattern */
 /* eslint-disable no-useless-catch */
-import clone from 'lodash/cloneDeep';
-import { DB } from '@/config/firebase';
+import clone from "lodash/cloneDeep";
+import { DB } from "@/config/firebase";
+import auth from "./auth";
 
 export default {
   namespaced: true,
   state: {
     selected_post: {},
     post_list: [],
-    subscriber: null
+    subscriber: null,
+    post_filters: [],
+    post_search: ""
   },
   getters: {
     GET_SELECTED_POST: state => state.selected_post,
-    GET_ALL_POST: state => state.post_list
+    GET_ALL_POST: state => state.post_list,
+    GET_FILTER_POST: state =>
+      state.post_list.filter(post => state.post_filters.includes(post.type)),
+    GET_SEARCH_POST: state =>
+      state.post_list.filter(
+        post =>
+          post.title.includes(state.post_search) ||
+          post.author.name.includes(state.post_search) ||
+          post.description.includes(state.post_search)
+      ),
+    GET_SEARCH_AND_FILTER_POST: state =>
+      state.post_list
+        .filter(
+          post =>
+            !state.post_search.length ||
+            post.title
+              .toLowerCase()
+              .includes(state.post_search.toLowerCase()) ||
+            post.author.name
+              .toLowerCase()
+              .includes(state.post_search.toLowerCase()) ||
+            post.description
+              .toLowerCase()
+              .includes(state.post_search.toLowerCase())
+        )
+        .filter(
+          post =>
+            !state.post_filters.length || state.post_filters.includes(post.type)
+        )
   },
   mutations: {
     SET_SELECTED_POST(state, post) {
       state.selected_post = clone(post);
     },
     CLEAR_SELECTED_POST(state) {
-      state.selected_post = {}
+      state.selected_post = {};
     },
     CLEAR_POST_LIST(state) {
       state.post_list = [];
@@ -32,8 +63,8 @@ export default {
     },
     UPDATE_TO_POST_LIST(state, post) {
       const index = state.post_list.findIndex(p => p.id === post.id);
-      if(index !== -1) {
-        Object.keys(state.post_list[index]).forEach((key) => {
+      if (index !== -1) {
+        Object.keys(state.post_list[index]).forEach(key => {
           state.post_list[index][key] = post[key]; //update per property of the object
         });
         state.post_list = [...state.post_list];
@@ -41,81 +72,107 @@ export default {
     },
     REMOVE_TO_POST_LIST(state, post) {
       const index = state.post_list.findIndex(p => p.id === post.id);
-      if(index !== -1) state.post_list.splice(index, 1);
+      if (index !== -1) state.post_list.splice(index, 1);
     },
     CLEAR_SUBSCRIBER(state) {
-      if(state.subscriber) {
+      if (state.subscriber) {
         state.subscriber();
       }
     },
     SET_SUBSCRIBER(state, payload) {
       state.subscriber = payload;
+    },
+    SET_FILTER_POST(state, filters) {
+      state.post_filters = filters;
+    },
+    SET_SEARCH_POST(state, search) {
+      state.post_search = search;
     }
   },
   actions: {
     async LISTEN_TO_POSTS({ state, commit }) {
-      commit('CLEAR_POST_LIST');
+      commit("CLEAR_POST_LIST");
       try {
-        const subscriber = DB.collection('posts')
-          .orderBy('created_at', 'desc')
-          .onSnapshot(snapshot => {
+        const subscriber = DB.collection("posts")
+          .orderBy("created_at", "desc")
+          .onSnapshot(async snapshot => {
             const changes = snapshot.docChanges();
 
-            for(const change of changes) {
+            for (const change of changes) {
               const post = change.doc.data();
               post.id = change.doc.id;
 
-              if(change.type === 'added') {
-                commit('ADD_TO_POST_LIST', post);
+              async function GET_AUTHOR(authorID) {
+                try {
+                  const userRef = await DB.collection("users")
+                    .doc(authorID)
+                    .get();
+                  return {
+                    ...userRef.data(),
+                    id: 1
+                  };
+                } catch (error) {
+                  throw error;
+                }
+              }
+              post.author = await GET_AUTHOR(post.authorID);
 
-              } else if(change.type === 'modified') {
-                commit('UPDATE_TO_POST_LIST', post);
-
-              } else if(change.type === 'removed') {
-                commit('REMOVE_TO_POST_LIST', post);
+              if (change.type === "added") {
+                commit("ADD_TO_POST_LIST", post);
+              } else if (change.type === "modified") {
+                commit("UPDATE_TO_POST_LIST", post);
+              } else if (change.type === "removed") {
+                commit("REMOVE_TO_POST_LIST", post);
               }
             }
           });
-          commit("SET_SUBSCRIBER", subscriber);
-
-      } catch(error) {
+        commit("SET_SUBSCRIBER", subscriber);
+      } catch (error) {
         throw error;
       }
     },
     async GET_POST({}, id) {
       try {
-        const post = await DB.collection('posts').doc(id).get();
+        const post = await DB.collection("posts")
+          .doc(id)
+          .get();
         return {
           ...post.data(),
           id: post.id
         };
-      } catch(error) {
+      } catch (error) {
         throw error;
       }
     },
     async ADD_POST({}, post) {
       try {
-        const addPost = await DB.collection('posts').doc().set(post);
+        const addPost = await DB.collection("posts")
+          .doc()
+          .set(post);
         return addPost;
-      } catch(error) {
+      } catch (error) {
         throw error;
       }
     },
     async EDIT_POST({}, post) {
       try {
-        const editPost = await DB.collection('posts').doc(post.id).update(post);
+        const editPost = await DB.collection("posts")
+          .doc(post.id)
+          .update(post);
         return editPost;
-      } catch(error) {
+      } catch (error) {
         throw error;
       }
     },
     async DELETE_POST({}, post) {
       try {
-        const deletePost = await DB.collection('posts').doc(post.id).delete();
+        const deletePost = await DB.collection("posts")
+          .doc(post.id)
+          .delete();
         return deletePost;
-      } catch(error) {
+      } catch (error) {
         throw error;
       }
     }
   }
-}
+};

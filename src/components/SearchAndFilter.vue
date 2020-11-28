@@ -57,17 +57,20 @@ export default {
   data: () => ({
     search: null,
     search_filters: [
-      { text: "Services", value: "services", icon: "fa-user-nurse" },
-      { text: "Event", value: "event", icon: "fa-calendar-alt" },
-      { text: "Support Groups", value: "support group", icon: "fa-users" },
-      { text: "Campaign", value: "campaigns", icon: "fa-bullhorn" }
+      { text: "Services", value: "Services", icon: "fa-user-nurse" },
+      { text: "Events", value: "Events", icon: "fa-calendar-alt" },
+      { text: "Support Groups", value: "Support Groups", icon: "fa-users" },
+      { text: "Campaign", value: "Campaigns", icon: "fa-bullhorn" }
     ],
-    filter: ["services"]
+    filter: []
   }),
   methods: {},
   watch: {
     filter(val) {
-      console.log(val);
+      this.$store.commit("posts/SET_FILTER_POST", val);
+    },
+    search(val) {
+      this.$store.commit("posts/SET_SEARCH_POST", val);
     }
   }
 };
