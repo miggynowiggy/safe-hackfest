@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     async openPostDialog(post) {
-      this.$refs.postDialog.openDialog(post);
+      this.$refs.postDialog.openDialog();
     }
   },
   computed: {

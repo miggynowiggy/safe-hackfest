@@ -148,6 +148,7 @@ export default {
         this.data = { email: null, password: null };
         this.loginBtnLoading = false;
         this.$router.push({ name: "Home" });
+        
       } catch (error) {
         this.loginBtnLoading = false;
         this.openSnackBar(error.message);

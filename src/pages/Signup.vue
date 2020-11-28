@@ -178,7 +178,8 @@ export default {
       provider: { company: null, email: null, password: null, isAgree: null },
       showPassword: false,
       registerLoading: false,
-      snackBarState: false
+      snackBarState: false,
+      snackBarMessage: null,
     };
   },
   methods: {
@@ -204,12 +205,6 @@ export default {
     async register() {
       try {
         this.registerLoading = true;
-        
-        if(this.user.password !== this.user.confirmPassword) {
-          this.openSnackBar("Confirm Password does not match!");
-          this.registerLoading = false;
-          return;
-        }
 
         if (this.selectedUser === "provider") {
           await this.$store.dispatch("auth/SIGN_UP", this.provider);
