@@ -25,10 +25,12 @@ export default {
         if(user.hasOwnProperty('company')) {
           name = user.company;
           type = "provider";
+
         } else {
           name = `${user.firstName} ${user.lastName}`;
           type = "individual";
         }
+
         const createdUser = await AUTH.createUserWithEmailAndPassword(email, password);
         await DB.collection("users").doc(createdUser.uid).set({ name, email, type });
         commit("SET_USER", { name, email, type });
@@ -76,6 +78,7 @@ export default {
         };
         commit("SET_USER", data);
         return true;
+
       } catch(error) {
         throw error;
       }
