@@ -176,16 +176,16 @@
             <v-icon v-text="'fa-address-book'" size="16" left color="primary" />
             <span v-text="'Contact Details'" class="mt-2 text-subtitle-2" />
             
-            <div class="text-body-2 mt-3 pre-text-layout">
+            <div class="text-body-2 mt-3 pre-text-layout" v-if="post.email || post.author.email">
               <span v-text="`Email: `" />
-              <a :href="`mailto:${post.author.email}`">
-                <span v-text="`${post.author.email}`" />
+              <a :href="`mailto:${post.email || post.author.email}`">
+                <span v-text="`${post.email || post.author.email}`" />
               </a>
             </div>
-            <div class="text-body-2 mt-2 pre-text-layout">
+            <div class="text-body-2 mt-2 pre-text-layout" v-if="post.mobile || post.author.phoneNumber">
               <span v-text="`Contact Number: `" />
-              <a :href="`tel:${post.author.phoneNumber}`">
-                <span v-text="`${post.author.phoneNumber}`" />
+              <a :href="`tel:${post.mobile || post.author.phoneNumber}`">
+                <span v-text="`${post.mobile || post.author.phoneNumber }`" />
               </a>
             </div>
           </div>
@@ -217,8 +217,16 @@ export default {
       this.$emit("editPost", clone(this.post));
       this.dialogState = false;
     },
-    deletePost() {
-      console.log("this post is deleted.");
+    async deletePost() {
+      try {
+        await this.$store.dispatch("posts/DELETE_POST", this.post);
+        this.dialogState = false;
+        this.$emit("showNotice", "success", "Post deleted!");
+      } catch(error) {
+        this.dialogState = false;
+        this.$emit("showNotice", "error", "Post can't be deleted!");
+        throw error;
+      }
     },
     async bookmarkPost() {
       try {
