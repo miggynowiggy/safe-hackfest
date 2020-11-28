@@ -14,33 +14,34 @@ Vue.use(morphDateFormat);
 Vue.use(VueMasonry);
 
 let app;
-AUTH.onAuthStateChanged(async (user) => {
-	if (!app) {
-		if (user) {
+
+AUTH.onAuthStateChanged(async user => {
+  if (!app) {
+    if (user) {
       try {
-				await store.dispatch("auth/RELOAD_USER", user.uid);
-			} catch (e) {
+        await store.dispatch("auth/RELOAD_USER", user.uid);
+      } catch (e) {
         console.log(e);
         throw e;
       }
+
       app = new Vue({
         router,
         store,
         vuetify,
         render: h => h(App)
-      }).$mount('#app')
+      }).$mount("#app");
 
       router.push({ name: "Home" });
-
-		} else {
+    } else {
       app = new Vue({
         router,
         store,
         vuetify,
         render: h => h(App)
-      }).$mount('#app')
+      }).$mount("#app");
 
       router.push({ name: "Landing Page" });
-		}
-	}
+    }
+  }
 });
