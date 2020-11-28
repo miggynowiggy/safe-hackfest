@@ -96,7 +96,7 @@
       </div>
     </v-card>
 
-    <div class="my-10">
+    <!-- <div class="my-10">
       <div class="d-flex align-center">
         <v-icon v-text="'fa-share-square'" class="mr-5" color="accent" />
         <span class="text-h6">Recent Posts</span>
@@ -120,7 +120,7 @@
           @openPost="openPostDialog"
         />
       </masonry>
-    </div>
+    </div> -->
     <v-fab-transition>
       <v-btn class="mr-5 mb-5" color="primary" fab fixed dark bottom right>
         <v-icon v-text="'fa-plus'" />
@@ -150,6 +150,7 @@ export default {
       this.$refs.postDialog.openDialog(post);
     },
     editProfile() {
+      console.log(this.info);
       const { posts, ...profileInfo } = this.info;
       this.$emit("editProfile", profileInfo);
     },
