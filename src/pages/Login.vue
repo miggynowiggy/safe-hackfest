@@ -106,7 +106,7 @@ export default {
           label: "Password"
         }
       },
-      data: { email: null, password: null },
+      data: { email: "", password: "" },
       showPassword: false,
       googleLoading: false,
       loginBtnLoading: false,
@@ -148,7 +148,7 @@ export default {
         this.data = { email: null, password: null };
         this.loginBtnLoading = false;
         this.$router.push({ name: "Home" });
-        
+
       } catch (error) {
         this.loginBtnLoading = false;
         this.openSnackBar(error.message);
