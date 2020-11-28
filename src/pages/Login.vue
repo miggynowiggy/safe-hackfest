@@ -115,6 +115,10 @@ export default {
     };
   },
   methods: {
+    openSnackBar(message) {
+      this.snackBarMessage = message;
+      this.snackBarState = true;
+    },
     onClickAppend() {
       this.showPassword = !this.showPassword;
       this.loginFields["password"]["type"] = this.showPassword
@@ -146,8 +150,7 @@ export default {
         this.$router.push({ name: "Home" });
       } catch (error) {
         this.loginBtnLoading = false;
-        this.snackBarState = true;
-        this.snackBarMessage = error.message;
+        this.openSnackBar(error.message);
         throw error;
       }
     }
