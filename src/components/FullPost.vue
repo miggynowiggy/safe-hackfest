@@ -14,11 +14,14 @@
               v-if="isLoggedIn"
               icon
               class="btn-translucent mr-2"
-              @click.stop=""
-            >
-              <v-icon v-text="'far fa-bookmark'" color="white" size="20" />
+              :loading="bookmarkLoading"
+              @click.stop="bookmarkPost"
+            > 
+              <v-icon v-if="post.isBookmarked" v-text="'fas fa-bookmark'" color="accent" size="20" />
+              <v-icon v-else v-text="'far fa-bookmark'" color="white" size="20" />
             </v-btn>
             <v-btn
+              v-if="isLoggedIn"
               @click="editPost"
               icon
               class="btn-translucent mr-2"
@@ -27,6 +30,7 @@
               <v-icon v-text="'fa-edit'" color="white" size="16" />
             </v-btn>
             <v-btn
+              v-if="isLoggedIn"
               @click="deletePost"
               icon
               class="btn-translucent mr-2"
@@ -61,11 +65,14 @@
               v-if="isLoggedIn"
               icon
               class="btn-translucent mr-2"
-              @click.stop=""
-            >
-              <v-icon v-text="'far fa-bookmark'" color="white" size="20" />
+              :loading="bookmarkLoading"
+              @click.stop="bookmarkPost"
+            > 
+              <v-icon v-if="post.isBookmarked" v-text="'fas fa-bookmark'" color="accent" size="20" />
+              <v-icon v-else v-text="'far fa-bookmark'" color="white" size="20" />
             </v-btn>
             <v-btn
+              v-if="isLoggedIn"
               @click="editPost"
               icon
               class="btn-translucent mr-2"
@@ -74,10 +81,11 @@
               <v-icon v-text="'fa-edit'" color="white" size="16" />
             </v-btn>
             <v-btn
+              v-if="isLoggedIn"
               @click="deletePost"
               icon
               class="btn-translucent mr-2"
-              @click.stop=""
+              @click.stop="bookmarkPost"
             >
               <v-icon v-text="'fa-trash-alt'" color="white" size="16" />
             </v-btn>
@@ -167,12 +175,19 @@
           <div class="mb-5">
             <v-icon v-text="'fa-address-book'" size="16" left color="primary" />
             <span v-text="'Contact Details'" class="mt-2 text-subtitle-2" />
-            <p
-              v-for="(field, key) in contactFields"
-              class="text-body-2 mt-2 pre-text-layout"
-              v-text="`${field.name} ${post.contacts[key]}`"
-              :key="key"
-            />
+            
+            <div class="text-body-2 mt-3 pre-text-layout">
+              <span v-text="`Email: `" />
+              <a :href="`mailto:${post.author.email}`">
+                <span v-text="`${post.author.email}`" />
+              </a>
+            </div>
+            <div class="text-body-2 mt-2 pre-text-layout">
+              <span v-text="`Contact Number: `" />
+              <a :href="`tel:${post.author.phoneNumber}`">
+                <span v-text="`${post.author.phoneNumber}`" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -188,15 +203,10 @@ export default {
   name: "FullPost",
   data: () => ({
     dialogState: false,
-    post: {},
-    contactFields: {
-      email: { name: "Email" },
-      phoneNumber: { name: "Mobile Phone No." }
-    }
+    bookmarkLoading: false
   }),
   methods: {
-    openDialog(post) {
-      this.post = clone(post);
+    openDialog() {
       this.dialogState = true;
     },
     editPost() {
@@ -205,6 +215,29 @@ export default {
     },
     deletePost() {
       console.log("this post is deleted.");
+    },
+    async bookmarkPost() {
+      console.log(this.post);
+      try {
+        this.bookmarkLoading = true;
+        if(!this.post.isBookmarked) {
+          await this.$store.dispatch("users/BOOKMARK_POST", {
+            userID: AUTH.currentUser.uid,
+            postID: this.post.id
+          });
+        
+        } else {
+          await this.$store.dispatch("users/UNBOOKMARK_POST", {
+            userID: AUTH.currentUser.uid,
+            postID: this.post.id
+          });
+        }
+        this.bookmarkLoading = false;
+
+      } catch(error) {
+        this.bookmarkLoading = false;
+        throw error;
+      }
     }
   },
   computed: {
@@ -213,6 +246,9 @@ export default {
     },
     isEvent() {
       return this.post.type === "Events";
+    },
+    post() {
+      return this.$store.getters['posts/GET_SELECTED_POST'];
     }
   }
 };
