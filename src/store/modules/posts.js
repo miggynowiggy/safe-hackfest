@@ -95,22 +95,10 @@ export default {
         });
         state.post_list = [...state.post_list];
       }
-
-      //Also update the selected post
-      if(index !== -1 && state.selected_post.id === post.id) {
-        Object.keys(post).forEach((key) => {
-					state.selected_post[key] = post[key]; //update per property of the object
-				});
-      }
     },
     REMOVE_TO_POST_LIST(state, post) {
       const index = state.post_list.findIndex(p => p.id === post.id);
       if (index !== -1) state.post_list.splice(index, 1);
-
-      //Also remove the selected post
-      if(index !== -1 && state.selected_post.id === post.id) {
-        state.selected_post = clone(postModel);
-      }
     },
     CLEAR_SUBSCRIBER(state) {
       if (state.subscriber) {
