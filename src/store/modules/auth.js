@@ -25,6 +25,11 @@ export default {
 		CLEAR_USER(state) {
       state.user = clone(userModel)
     },
+    UPDATE_USER(state, newDetails) {
+      Object.keys(newDetails).forEach(key => {
+        state.user[key] = newDetails[key];
+      });
+    }
 	},
 	actions: {
 		async SIGN_UP({ commit }, user) {
@@ -107,7 +112,16 @@ export default {
 				AUTH.signOut();
 				throw error;
 			}
-		},
+    },
+    async UPDATE_USER({ commit }, {id, newDetails}) {
+      try {
+        await DB.collection("users").doc(id).update(newDetails);
+        commit('UPDATE_USER', newDetails);
+        return true;
+      } catch(error) {
+        throw error;
+      }
+    },
 		async USE_GOOGLE_AUTH({ commit }) {
 			try {
 				const provider = new FB.auth.GoogleAuthProvider();
