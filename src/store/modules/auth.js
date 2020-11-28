@@ -115,9 +115,6 @@ export default {
 		},
 		async UPDATE_USER({ state, commit }, { id, newDetails }) {
 			try {
-				// if (state.user.email !== newDetails.email) {
-				// 	await AUTH.currentUser.updateEmail(newDetails.email);
-				// }
 				await DB.collection("users")
 					.doc(id)
 					.update(newDetails);
