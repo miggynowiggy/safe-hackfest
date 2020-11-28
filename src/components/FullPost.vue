@@ -10,8 +10,29 @@
             class="font-weight-semibold elevation-6"
           />
           <div>
-            <v-btn v-if="isLoggedIn" icon class="btn-translucent">
+            <v-btn
+              v-if="isLoggedIn"
+              icon
+              class="btn-translucent mr-2"
+              @click.stop=""
+            >
               <v-icon v-text="'far fa-bookmark'" color="white" size="20" />
+            </v-btn>
+            <v-btn
+              @click="editPost"
+              icon
+              class="btn-translucent mr-2"
+              @click.stop=""
+            >
+              <v-icon v-text="'fa-edit'" color="white" size="16" />
+            </v-btn>
+            <v-btn
+              @click="deletePost"
+              icon
+              class="btn-translucent mr-2"
+              @click.stop=""
+            >
+              <v-icon v-text="'fa-trash-alt'" color="white" size="16" />
             </v-btn>
             <v-btn
               icon
@@ -36,8 +57,29 @@
             class="font-weight-semibold elevation-6"
           />
           <div>
-            <v-btn v-if="isLoggedIn" icon class="btn-translucent mr-2">
+            <v-btn
+              v-if="isLoggedIn"
+              icon
+              class="btn-translucent mr-2"
+              @click.stop=""
+            >
               <v-icon v-text="'far fa-bookmark'" color="white" size="20" />
+            </v-btn>
+            <v-btn
+              @click="editPost"
+              icon
+              class="btn-translucent mr-2"
+              @click.stop=""
+            >
+              <v-icon v-text="'fa-edit'" color="white" size="16" />
+            </v-btn>
+            <v-btn
+              @click="deletePost"
+              icon
+              class="btn-translucent mr-2"
+              @click.stop=""
+            >
+              <v-icon v-text="'fa-trash-alt'" color="white" size="16" />
             </v-btn>
             <v-btn
               icon
@@ -140,6 +182,7 @@
 
 <script>
 import { AUTH } from "@/config/firebase";
+import clone from "lodash/cloneDeep";
 
 export default {
   name: "FullPost",
@@ -153,8 +196,15 @@ export default {
   }),
   methods: {
     openDialog(post) {
-      this.post = Object.assign({}, post);
+      this.post = clone(post);
       this.dialogState = true;
+    },
+    editPost() {
+      this.$emit("editPost", clone(this.post));
+      this.dialogState = false;
+    },
+    deletePost() {
+      console.log("this post is deleted.");
     }
   },
   computed: {
