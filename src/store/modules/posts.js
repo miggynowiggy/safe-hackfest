@@ -1,13 +1,28 @@
 /* eslint-disable no-empty-pattern */
 /* eslint-disable no-useless-catch */
 import clone from "lodash/cloneDeep";
-import { DB } from "@/config/firebase";
-import auth from "./auth";
+import { DB, AUTH } from "@/config/firebase";
+
+const postModel = {
+	author: {
+		name: "",
+    phoneNumber: "",
+    email: ""
+	},
+	title: "",
+	description: "",
+	created_at: "",
+	eventDate: "",
+	authorID: "",
+	location: "",
+	supportLink: "",
+	type: "",
+};
 
 export default {
   namespaced: true,
   state: {
-    selected_post: {},
+    selected_post: postModel,
     post_list: [],
     subscriber: null,
     post_filters: [],
@@ -64,10 +79,17 @@ export default {
     UPDATE_TO_POST_LIST(state, post) {
       const index = state.post_list.findIndex(p => p.id === post.id);
       if (index !== -1) {
-        Object.keys(state.post_list[index]).forEach(key => {
+        Object.keys(post).forEach(key => {
           state.post_list[index][key] = post[key]; //update per property of the object
         });
         state.post_list = [...state.post_list];
+      }
+
+      //Also update the selected post
+      if(index !== -1 && state.selected_post.id === post.id) {
+        Object.keys(post).forEach((key) => {
+					state.selected_post[key] = post[key]; //update per property of the object
+				});
       }
     },
     REMOVE_TO_POST_LIST(state, post) {
@@ -90,8 +112,11 @@ export default {
     }
   },
   actions: {
-    async LISTEN_TO_POSTS({ state, commit }) {
+    async LISTEN_TO_POSTS({ state, commit, rootGetters, dispatch }) {
       commit("CLEAR_POST_LIST");
+      const cachedAuthors = [];
+      const currentUser = rootGetters["auth/GET_USER"];
+
       try {
         const subscriber = DB.collection("posts")
           .orderBy("created_at", "desc")
@@ -102,20 +127,22 @@ export default {
               const post = change.doc.data();
               post.id = change.doc.id;
 
-              async function GET_AUTHOR(authorID) {
-                try {
-                  const userRef = await DB.collection("users")
-                    .doc(authorID)
-                    .get();
-                  return {
-                    ...userRef.data(),
-                    id: 1
-                  };
-                } catch (error) {
-                  throw error;
-                }
+              //Get Author from the cached authors list
+              const existingAuthor = cachedAuthors.find(author => author.id === post.authorID);
+              if(!existingAuthor) {
+                const author = await dispatch("users/GET_USER", post.authorID , { root: true });
+                cachedAuthors.push(author);
+                post.author = clone(author);
+              
+              } else {
+                post.author = clone(existingAuthor);
               }
-              post.author = await GET_AUTHOR(post.authorID);
+
+              //Determine if the post has been bookmarked by the currently logged in user.
+              if(AUTH.currentUser) {
+                post.isBookmarked = currentUser.bookmarks.includes(post.id);
+              }
+              
 
               if (change.type === "added") {
                 commit("ADD_TO_POST_LIST", post);
@@ -123,6 +150,10 @@ export default {
                 commit("UPDATE_TO_POST_LIST", post);
               } else if (change.type === "removed") {
                 commit("REMOVE_TO_POST_LIST", post);
+              }
+
+              if(state.selected_post.id === post.id) {
+                commit('SET_SELECTED_POST', post);
               }
             }
           });

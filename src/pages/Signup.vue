@@ -111,10 +111,21 @@
         color="secondary"
         block
         :loading="registerLoading"
+        :disabled="!user['isAgree']"
         @click="register"
         >Signup</v-btn
       >
     </v-form>
+    <v-snackbar
+      v-model="snackBarState"
+      top
+      right
+      dark
+      rounded
+      color="error"
+      :timeout="5000"
+      >{{ snackBarMessage }}</v-snackbar
+    >
   </auth-container>
 </template>
 
@@ -166,10 +177,16 @@ export default {
       },
       provider: { company: null, email: null, password: null, isAgree: null },
       showPassword: false,
-      registerLoading: false
+      registerLoading: false,
+      snackBarState: false,
+      snackBarMessage: null,
     };
   },
   methods: {
+    openSnackBar(message) {
+      this.snackBarMessage = message;
+      this.snackBarState = true;
+    },
     cleanFormFields(value) {
       if (value === "provider")
         Object.keys(this.user).forEach(field => (this.user[field] = null));
@@ -188,14 +205,18 @@ export default {
     async register() {
       try {
         this.registerLoading = true;
+
         if (this.selectedUser === "provider") {
           await this.$store.dispatch("auth/SIGN_UP", this.provider);
         } else {
           await this.$store.dispatch("auth/SIGN_UP", this.user);
         }
+
         this.registerLoading = false;
         this.$router.push({ name: "Home" });
       } catch (error) {
+        this.registerLoading = false;
+        this.openSnackBar(error.message);
         throw error;
       }
     }
