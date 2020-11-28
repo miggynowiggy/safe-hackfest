@@ -20,6 +20,7 @@ AUTH.onAuthStateChanged(async user => {
     if (user) {
       try {
         await store.dispatch("auth/RELOAD_USER", user.uid);
+        await store.dispatch("posts/LISTEN_TO_POSTS");
       } catch (e) {
         console.log(e);
         throw e;

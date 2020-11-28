@@ -36,9 +36,6 @@ export default {
     FullPost
   },
   name: "Home",
-  async created() {
-    await this.$store.dispatch("posts/LISTEN_TO_POSTS");
-  },
   data: function() {
     return {};
   },

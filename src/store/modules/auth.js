@@ -115,10 +115,9 @@ export default {
 		},
 		async UPDATE_USER({ state, commit }, { id, newDetails }) {
 			try {
-				if (state.user.email !== newDetails.email) {
-					await AUTH.currentUser.updateEmail(newDetails.email);
-				}
-
+				// if (state.user.email !== newDetails.email) {
+				// 	await AUTH.currentUser.updateEmail(newDetails.email);
+				// }
 				await DB.collection("users")
 					.doc(id)
 					.update(newDetails);
@@ -136,17 +135,17 @@ export default {
 				await profilePicRef.put(file);
 				const downloadURL = await profilePicRef.getDownloadURL();
 
-				await DB.collection("users").doc(user.id).update({ 
+				await DB.collection("users").doc(user.id).update({
           displayPhoto: downloadURL,
-          displayPhotoFormat: fileType 
+          displayPhotoFormat: fileType
         });
 
-				commit("UPDATE_USER", { 
-          displayPhoto: downloadURL, 
-          displayPhotoFormat: fileType 
+				commit("UPDATE_USER", {
+          displayPhoto: downloadURL,
+          displayPhotoFormat: fileType
         });
         return true;
-        
+
 			} catch (error) {
 				throw error;
 			}
@@ -158,7 +157,7 @@ export default {
 				const profilePicRef = STORAGE.ref(`/display_picture/${user.id}.${fileType}`);
 				await profilePicRef.delete();
 
-				await DB.collection("users").doc(user.id).update({ 
+				await DB.collection("users").doc(user.id).update({
           displayPhoto: null,
           displayPhotoFormat: null,
         });
@@ -168,7 +167,7 @@ export default {
 					displayPhotoFormat: null,
 				});
         return true;
-        
+
 			} catch (error) {
 				throw error;
 			}

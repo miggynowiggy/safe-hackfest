@@ -88,7 +88,7 @@
             </div>
           </div>
         </div>
-        <v-btn class="mt-4 text-none" color="primary" 
+        <v-btn class="mt-4 text-none" color="primary"
           @click="saveChanges" :loading="saveBtnLoading">
           <v-icon v-text="'fa-save'" size="16" left />
           Save Changes
@@ -157,7 +157,7 @@ export default {
         this.saveBtnLoading = true;
         if(this.info.type === 'provider') {
           await this.saveProvider();
-        
+
         } else {
           await this.saveIndividual();
         }
@@ -175,18 +175,18 @@ export default {
 
     async saveProvider() {
       try {
-        const { 
-          id, name, email, address, closingTime,
-          openingTime, phoneNumber, telephone, website 
+        const {
+          id, name, address, closingTime,
+          openingTime, phoneNumber, telephone, website
         } = this.info;
-        
+
         await this.$store.dispatch('auth/UPDATE_USER', {
           id,
           newDetails: {
-            name, 
-            address: address || null, 
-            phoneNumber: phoneNumber || null, 
-            telephone: telephone || null, 
+            name,
+            address: address || null,
+            phoneNumber: phoneNumber || null,
+            telephone: telephone || null,
             website: website || null,
             closingTime: closingTime || null,
             openingTime: openingTime || null
@@ -202,12 +202,11 @@ export default {
     async saveIndividual() {
       try {
         const { id, name, email, phoneNumber, birthday } = this.info;
-
         await this.$store.dispatch('auth/UPDATE_USER', {
           id,
           newDetails: {
-            name, 
-            phoneNumber: phoneNumber || null, 
+            name,
+            phoneNumber: phoneNumber || null,
             birthday: birthday || null
           }
         });
