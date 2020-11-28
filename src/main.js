@@ -17,7 +17,7 @@ let app;
 
 AUTH.onAuthStateChanged(async user => {
   if (!app) {
-    await store.dispatch("posts/LISTEN_TO_POSTS");
+    store.dispatch("posts/LISTEN_TO_POSTS");
     if (user) {
       try {
         await store.dispatch("auth/RELOAD_USER", user.uid);
