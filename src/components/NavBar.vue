@@ -1,7 +1,7 @@
 <template>
-  <v-app-bar app absolute flat color="white" outlined>
+  <v-app-bar app fixed elevate-on-scroll flat color="white" outlined>
     <v-container class="d-flex justify-space-between align-center">
-      <div class="d-flex align-center">
+      <div @click="goToHomePage" class="d-flex align-center pointer-cursor">
         <div class="mr-3">
           <v-img :src="require('@/assets/img/safe-logo.svg')" width="35" />
         </div>
@@ -100,8 +100,8 @@ export default {
     login() {
       this.$router.push({ name: "Login" });
     },
-    viewProfile() {
-      window.alert("profile clicked");
+    goToHomePage() {
+      this.$router.push({ name: "Home" });
     },
     async logout() {
       await this.$store.dispatch("auth/LOGOUT");
