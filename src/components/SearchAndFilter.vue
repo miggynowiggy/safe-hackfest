@@ -60,7 +60,8 @@ export default {
       { text: "Services", value: "Services", icon: "fa-user-nurse" },
       { text: "Events", value: "Events", icon: "fa-calendar-alt" },
       { text: "Support Groups", value: "Support Groups", icon: "fa-users" },
-      { text: "Campaign", value: "Campaigns", icon: "fa-bullhorn" }
+      { text: "Campaign", value: "Campaigns", icon: "fa-bullhorn" },
+      { text: "Hotline", value: "Hotlines", icon: "fa-mobile-alt" }
     ],
     filter: []
   }),
