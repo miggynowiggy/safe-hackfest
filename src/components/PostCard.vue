@@ -3,8 +3,8 @@
     <v-card class="mb-8 pointer-cursor" :class="{ 'elevation-10': hover }">
       <div @click.stop="openModal">
         <v-img
-          v-if="post.banner"
-          :src="post.banner"
+          v-if="post.bannerURL"
+          :src="post.bannerURL"
           class="rounded-t-lg"
           height="180"
           cover
@@ -58,7 +58,10 @@
               color="grey lighten-1"
               left
             />
-            <span class="text-caption text--secondary" v-text="post.author" />
+            <span
+              class="text-caption text--secondary"
+              v-text="post.author.name"
+            />
           </div>
           <p
             class="text-body-2 my-3"

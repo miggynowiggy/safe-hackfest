@@ -1,7 +1,7 @@
 <template>
   <v-dialog width="600" v-model="dialogState" overlay-opacity="0.95" scrollable>
     <v-card height="100%">
-      <v-img v-if="post.banner" :src="post.banner" height="180" cover>
+      <v-img v-if="post.bannerURL" :src="post.bannerURL" height="180" cover>
         <div class="pa-4 d-flex justify-space-between">
           <v-chip
             small
@@ -65,12 +65,12 @@
           />
           <div class="text-center ml-3">
             <v-btn
-              v-if="post.link"
+              v-if="post.supportLink"
               class="text-none"
               fab
               small
               color="primary"
-              :href="post.link"
+              :href="post.supportLink"
               target="_blank"
             >
               <v-icon v-text="'fa-info'" size="20" />
@@ -84,7 +84,10 @@
             color="grey lighten-1"
             left
           />
-          <span class="text-caption text--secondary" v-text="post.author" />
+          <span
+            class="text-caption text--secondary"
+            v-text="post.author.name"
+          />
         </div>
         <p class="text-body-2 my-3" v-text="post.description" />
         <div class="my-5">
@@ -115,7 +118,7 @@
             <p
               class="text-body-2 mt-2 pre-text-layout"
               v-text="
-                $morphDateFormat(post.scheduledEvent, 'MMMM DD, YYYY,  hh:mm A')
+                $morphDateFormat(post.eventDate, 'MMMM DD, YYYY,  hh:mm A')
               "
             />
           </div>
@@ -123,8 +126,10 @@
             <v-icon v-text="'fa-address-book'" size="16" left color="primary" />
             <span v-text="'Contact Details'" class="mt-2 text-subtitle-2" />
             <p
+              v-for="(field, key) in contactFields"
               class="text-body-2 mt-2 pre-text-layout"
-              v-text="post.contacts"
+              v-text="`${field.name} ${post.contacts[key]}`"
+              :key="key"
             />
           </div>
         </div>
@@ -140,7 +145,11 @@ export default {
   name: "FullPost",
   data: () => ({
     dialogState: false,
-    post: {}
+    post: {},
+    contactFields: {
+      email: { name: "Email" },
+      phoneNumber: { name: "Mobile Phone No." }
+    }
   }),
   methods: {
     openDialog(post) {
@@ -153,7 +162,7 @@ export default {
       return Boolean(AUTH.currentUser);
     },
     isEvent() {
-      return this.post.type === "Event";
+      return this.post.type === "Events";
     }
   }
 };
