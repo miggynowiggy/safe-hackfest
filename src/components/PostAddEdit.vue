@@ -16,27 +16,64 @@
           />
         </form>
         <div style="height:200px" class="primary">
-          <div class="gradient-theme px-4 pt-4 pb-0 d-flex">
-            <v-btn
-              v-if="postContent.banner || this.uploadedBanner"
-              @click="removeBannerPhoto"
-              color="white"
-              class="rounded-circle px-0 py-8 ml-3 mt-2"
-              elevation="10"
-            >
-              <v-icon v-text="'fa-times'" color="primary" />
-            </v-btn>
+          <v-img v-if="postContent.bannerURL" :src="postContent.bannerURL"
+            height="200px"
+            class="d-flex px-4 pt-4 pb-0"
+          >
+            <v-row align="start" justify="space-between">
+              <v-col cols="2">
+                <v-btn
+                  @click="removeBannerPhoto"
+                  color="white"
+                  class="rounded-circle px-0 py-8 ml-3 mt-2 d-flex"
+                  elevation="10"
+                >
+                  <v-icon v-text="'fa-trash-alt'" color="primary" />
+                </v-btn>
+              </v-col>
+              <v-col cols="2">
+                <v-btn icon @click="dialogState = !dialogState" large>
+                  <v-icon v-text="'fa-times'" color="white" />
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-img>
+
+          <v-img v-else-if="tempBanner" :src="tempBanner"
+            height="200px" style="width: 100%;"
+            class="d-flex px-2 pt-4 pb-0"
+          >
+            <v-row align="start" justify="space-between">
+              <v-col cols="2">
+                <v-btn
+                  @click="removeBannerPhoto"
+                  color="white"
+                  class="rounded-circle px-0 py-8 ml-3 mt-2 d-flex"
+                  elevation="10"
+                >
+                  <v-icon v-text="'fa-trash-alt'" color="primary" />
+                </v-btn>
+              </v-col>
+              <v-col cols="2">
+                <v-btn icon @click="dialogState = !dialogState" large>
+                  <v-icon v-text="'fa-times'" color="white" />
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-img>
+
+          <div v-else class="gradient-theme px-4 pt-4 pb-0 d-flex" >
             <v-btn
               @click="uploadBannerPhoto"
-              v-else
               color="white"
               class="rounded-circle px-0 py-8 ml-3 mt-2"
               elevation="10"
+              style="z-index: 10;"
             >
               <v-icon v-text="'fa-image'" color="primary" />
             </v-btn>
             <v-spacer />
-            <v-btn icon @click="dialogState = !dialogState" large>
+            <v-btn icon @click="dialogState = !dialogState" large style="z-index: 10;">
               <v-icon v-text="'fa-times'" color="white" />
             </v-btn>
           </div>
@@ -97,7 +134,8 @@
               </div>
             </div>
           </div>
-          <v-btn class="mt-4 text-none" color="primary" @click="saveChanges">
+          <v-btn class="mt-4 text-none" color="primary" 
+            @click="saveChanges" :loading="saveLoading">
             <v-icon v-text="'fa-save'" size="16" left />
             Save Changes
           </v-btn>
@@ -109,27 +147,26 @@
 
 <script>
 import FormLabel from "@/components/FormLabel";
+
 export default {
   components: {
-    FormLabel
+    FormLabel,
   },
   data() {
     return {
       uploadedBanner: null,
-      sampleUsername: "valenzuela.city@gov.ph",
       dialogState: false,
       postFields: {
         title: { name: "Post Title" },
         description: { type: "textarea", name: "Description" },
-        link: { type: "link", name: "Supported Link" },
+        supportLink: { type: "link", name: "Supported Link" },
         type: { type: "select", name: "Post Category" },
-        datetime: {
+        eventDate: {
           type: "datetime-local",
           name: "Scheduled Date and Time (dd-mm-yyyy)"
         },
         location: { type: "textarea", name: "Location / Venue" },
         mobile: { name: "Mobile Phone No." },
-        telephone: { name: "Telephone No." },
         email: { type: "email", name: "Contact Email" }
       },
       typeItems: [
@@ -141,15 +178,17 @@ export default {
       postContent: {
         title: null,
         description: null,
-        link: null,
+        supportLink: null,
         type: null,
-        datetime: null,
+        eventDate: null,
         location: null,
         mobile: null,
-        telephone: null,
         email: null,
-        banner: null
-      }
+        bannerURL: null
+      },
+      saveLoading: false,
+      formState: 'add',
+      tempBanner: null
     };
   },
   computed: {
@@ -161,42 +200,95 @@ export default {
         if (newValue) this.postContent["email"] = this.sampleUsername;
         else this.postContent["email"] = null;
       }
+    },
+    user() {
+      return this.$store.getters["auth/GET_USER"];
+    },
+    sampleUsername() {
+      return this.user.email;
     }
   },
   methods: {
-    openDialog(post) {
-      console.log(post);
+    openDialog(post, state) {
 
       this.dialogState = true;
+      this.formState = state;
 
-      if (post) this.postContent = Object.assign({}, this.postContent, post);
-      else
+      if (post) {
+        this.postContent = Object.assign({}, this.postContent, post);
+        this.postContent.mobile = this.user.phoneNumber;
+
+      } else {
         Object.keys(this.postContent).forEach(
           field => (this.postContent[field] = null)
         );
+      }
+
       this.$nextTick(() => {
         this.uploadedBanner = null;
         this.$refs.resetForm.reset();
       });
     },
-    saveChanges() {
+    async saveChanges() {
+      try { 
+        this.saveLoading = true;
+
+        if(this.formState === 'add') {
+          await this.$store.dispatch("posts/ADD_POST", {
+            content: this.postContent,
+            file: this.uploadedBanner
+          });
+          this.$emit("showNotice", "success", "Post added!");
+          this.saveLoading = false;
+        
+        } else if(this.formState === 'edit') {
+          await this.$store.dispatch("posts/EDIT_POST", {
+            content: this.postContent,
+            file: this.uploadedBanner
+          });
+          this.$emit("showNotice", "success", "Post edited!");
+          this.saveLoading = false;
+        }
+        
+      } catch(error) {
+        this.saveLoading = false;
+        this.$emit("showNotice", "error", "Post not added!");
+        throw error;
+      }
       this.dialogState = false;
     },
     uploadBannerPhoto() {
       this.$refs.bannerPhotoFile.click();
     },
-    removeBannerPhoto() {
+    async removeBannerPhoto() {
+      if(this.tempBanner) {
+        this.uploadedBanner = null;
+        this.tempBanner = null;
+        this.$refs.resetForm.reset();
+        return;
+      }
+
       if (this.uploadedBanner) {
         this.uploadedBanner = null;
         this.$refs.resetForm.reset();
         console.log(this.$refs.bannerPhotoFile.files[0]);
         return;
       }
+
+      if(this.postContent.bannerURL) {
+        this.postContent.bannerURL = null;
+        await this.$store.dispatch("posts/REMOVE_BANNER_PHOTO", this.postContent);
+      }
+
       //remove if there is an avatar
     },
-    onFileSelect(file) {
-      console.log(file.target.files[0]);
+    async onFileSelect(file) {
       this.uploadedBanner = file.target.files[0];
+      const reader = new FileReader
+      reader.onload = e => {
+        this.tempBanner = e.target.result;
+      }
+      reader.readAsDataURL(file.target.files[0])
     }
   }
 };
