@@ -11,7 +11,7 @@
           />
           <div>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="isLoggedIn && isUserIndividual"
               icon
               class="btn-translucent mr-2"
               :loading="bookmarkLoading"
@@ -21,7 +21,7 @@
               <v-icon v-else v-text="'far fa-bookmark'" color="white" size="20" />
             </v-btn>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="showEditDelete"
               @click="editPost"
               icon
               class="btn-translucent mr-2"
@@ -30,7 +30,7 @@
               <v-icon v-text="'fa-edit'" color="white" size="16" />
             </v-btn>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="showEditDelete"
               @click="deletePost"
               icon
               class="btn-translucent mr-2"
@@ -62,7 +62,7 @@
           />
           <div>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="isLoggedIn && isUserIndividual"
               icon
               class="btn-translucent mr-2"
               :loading="bookmarkLoading"
@@ -72,7 +72,7 @@
               <v-icon v-else v-text="'far fa-bookmark'" color="white" size="20" />
             </v-btn>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="showEditDelete"
               @click="editPost"
               icon
               class="btn-translucent mr-2"
@@ -81,7 +81,7 @@
               <v-icon v-text="'fa-edit'" color="white" size="16" />
             </v-btn>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="showEditDelete"
               @click="deletePost"
               icon
               class="btn-translucent mr-2"
@@ -201,9 +201,13 @@ import clone from "lodash/cloneDeep";
 
 export default {
   name: "FullPost",
+  mounted() {
+    this.currentPage = this.$router.currentRoute.name;
+  },
   data: () => ({
     dialogState: false,
-    bookmarkLoading: false
+    bookmarkLoading: false,
+    currentPage: '',
   }),
   methods: {
     openDialog() {
@@ -217,7 +221,6 @@ export default {
       console.log("this post is deleted.");
     },
     async bookmarkPost() {
-      console.log(this.post);
       try {
         this.bookmarkLoading = true;
         if(!this.post.isBookmarked) {
@@ -249,6 +252,14 @@ export default {
     },
     post() {
       return this.$store.getters['posts/GET_SELECTED_POST'];
+    },
+    isUserIndividual() {
+      const currentUser = this.$store.getters["auth/GET_USER"];
+      return currentUser.type === 'individual';
+    },
+    showEditDelete() {
+      //Only Show Edit and Delete Btn if current page is 'Profile' and the user is a Provider
+      return this.isLoggedIn && !this.isUserIndividual && this.currentPage === 'Profile';
     }
   }
 };

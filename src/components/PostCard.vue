@@ -18,7 +18,7 @@
             />
             <v-spacer />
             <v-btn
-              v-if="isLoggedIn"
+              v-if="isLoggedIn && isUserIndividual"
               icon
               class="btn-translucent mr-2"
               :loading="bookmarkLoading"
@@ -28,7 +28,7 @@
               <v-icon v-else v-text="'far fa-bookmark'" color="white" size="20" />
             </v-btn>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="showEditDelete"
               @click="editPost"
               icon
               class="btn-translucent mr-2"
@@ -37,7 +37,7 @@
               <v-icon v-text="'fa-edit'" color="white" size="16" />
             </v-btn>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="showEditDelete"
               @click="deletePost"
               icon
               class="btn-translucent"
@@ -61,7 +61,7 @@
             />
             <v-spacer />
             <v-btn
-              v-if="isLoggedIn"
+              v-if="isLoggedIn && isUserIndividual"
               icon
               class="btn-translucent mr-2"
               :loading="bookmarkLoading"
@@ -71,7 +71,7 @@
               <v-icon v-else v-text="'far fa-bookmark'" color="white" size="20" />
             </v-btn>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="showEditDelete"
               @click="editPost"
               icon
               class="btn-translucent mr-2"
@@ -80,7 +80,7 @@
               <v-icon v-text="'fa-edit'" color="white" size="16" />
             </v-btn>
             <v-btn
-              v-if="isLoggedIn"
+              v-if="showEditDelete"
               @click="deletePost"
               icon
               class="btn-translucent"
@@ -132,8 +132,12 @@ import { AUTH } from "@/config/firebase";
 export default {
   name: "PostCard",
   props: ['post'],
+  mounted() {
+    this.currentPage = this.$router.currentRoute.name;
+  },
   data: () => ({
     bookmarkLoading: false,
+    currentPage: ''
   }),
   methods: {
     openModal() {
@@ -150,7 +154,6 @@ export default {
       console.log("this post is deleted.");
     },
     async bookmarkPost() {
-      console.log(this.post);
       try {
         this.bookmarkLoading = true;
         if(!this.post.isBookmarked) {
@@ -176,6 +179,14 @@ export default {
   computed: {
     isLoggedIn() {
       return Boolean(AUTH.currentUser);
+    },
+    isUserIndividual() {
+      const currentUser = this.$store.getters["auth/GET_USER"];
+      return currentUser.type === 'individual';
+    },
+    showEditDelete() {
+      //Only Show Edit and Delete Btn if current page is 'Profile' and the user is a Provider
+      return this.isLoggedIn && !this.isUserIndividual && this.currentPage === 'Profile';
     }
   }
 };
