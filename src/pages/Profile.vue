@@ -5,7 +5,10 @@
       <v-container>
         <v-row justify="center">
           <v-col cols="12" md="10" xl="8">
-            <profile-info :info="info" @editProfile="editProfileInfo" />
+            <profile-info :info="info" 
+              @editProfile="editProfileInfo"
+              @showNotice="toggleSnackbar" 
+            />
             <div class="my-10">
               <div class="d-flex align-center" v-if="isUserProvider">
                 <v-icon v-text="'fa-share-square'" class="mr-5" />
