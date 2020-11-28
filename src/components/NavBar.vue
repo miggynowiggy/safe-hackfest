@@ -1,19 +1,22 @@
 <template>
-  <v-app-bar app absolute flat color="primary" dark>
+  <v-app-bar app absolute flat color="white" outlined>
     <v-container class="d-flex justify-space-between align-center">
       <div class="d-flex align-center">
         <div class="mr-3">
-          <v-img
-            :src="require('@/assets/img/safe-logo-white.svg')"
-            width="35"
-          />
+          <v-img :src="require('@/assets/img/safe-logo.svg')" width="35" />
         </div>
-        <v-toolbar-title class="font-weight-medium text-h5">
+        <v-toolbar-title class="font-weight-medium primary--text text-h5">
           Safe
         </v-toolbar-title>
       </div>
       <div class="d-flex" v-if="!isLoggedIn">
-        <v-btn class="text-none" :to="{ name: 'Login' }" text small>
+        <v-btn
+          color="primary"
+          class="text-none"
+          :to="{ name: 'Login' }"
+          text
+          small
+        >
           <v-icon v-text="'fa-sign-in-alt'" small left />
           Login
         </v-btn>
@@ -42,7 +45,7 @@
           <template #activator="{on, attrs}">
             <v-btn v-bind="attrs" v-on="on" class="text-none" icon>
               <div class="d-flex align-center pointer-cursor">
-                <v-icon v-text="'fa-user-circle'" size="22" />
+                <v-icon v-text="'fa-user-circle'" color="primary" size="22" />
               </div>
             </v-btn>
           </template>
@@ -50,9 +53,17 @@
             <div class="d-flex px-3">
               <v-icon v-text="'fa-user-circle'" size="40" class="mr-4" />
               <div class="d-flex flex-column">
-                <span class="text-body-1 font-weight-semibold">{{ user.name }}</span>
+                <span class="text-body-1 font-weight-semibold">{{
+                  user.name
+                }}</span>
                 <div>
-                  <v-btn class="text-none ml-n2" color="secondary" small text>
+                  <v-btn
+                    :to="{ name: 'Profile' }"
+                    class="text-none ml-n2"
+                    color="secondary"
+                    small
+                    text
+                  >
                     <v-icon v-text="'fa-id-card'" size="12" left />
                     <span class="text-caption">View Profile</span>
                   </v-btn>
@@ -101,8 +112,8 @@ export default {
     isLoggedIn() {
       return Boolean(AUTH.currentUser);
     },
-    user(){
-      return this.$store.getters['auth/GET_USER'];
+    user() {
+      return this.$store.getters["auth/GET_USER"];
     }
   }
 };
