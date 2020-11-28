@@ -80,7 +80,7 @@
         <div class="ml-0 mt-5 mt-md-0 ml-md-10 d-flex flex-column">
           <span
             class="text-h5 text-uppercase font-weight-medium"
-            v-text="`${info['author']['name']}`"
+            v-text="`${info['name']}`"
           />
           <span class="text-body-2 text--secondary" v-text="info['email']" />
           <div class="d-flex">
