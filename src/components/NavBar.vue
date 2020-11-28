@@ -33,6 +33,9 @@
             <span class="text-body-2">Help</span>
           </div>
         </v-btn>
+        <v-btn class="text-none" icon :to="{name: 'Home'}">
+          <v-icon v-text="'fa-home'" color="primary" size="22" />
+        </v-btn>
         <v-menu
           bottom
           left

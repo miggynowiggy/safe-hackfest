@@ -136,7 +136,8 @@ export default {
         { text: "Services", value: "Services" },
         { text: "Events", value: "Events" },
         { text: "Support Groups", value: "Support Groups" },
-        { text: "Campaigns", value: "Campaigns" }
+        { text: "Campaigns", value: "Campaigns" },
+        { text: "Hotlines", value: "Hotlines"}
       ],
       postContent: {
         title: null,
