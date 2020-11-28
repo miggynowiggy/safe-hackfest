@@ -5,7 +5,10 @@
       <v-container>
         <v-row justify="center">
           <v-col cols="12" md="10" xl="8">
-            <profile-info :info="info" @editProfile="editProfileInfo" />
+            <profile-info :info="info" 
+              @editProfile="editProfileInfo"
+              @showNotice="toggleSnackbar" 
+            />
             <div class="my-10">
               <div class="d-flex align-center" v-if="isUserProvider">
                 <v-icon v-text="'fa-share-square'" class="mr-5" />
@@ -54,8 +57,18 @@
       </v-container>
     </v-main>
     <full-post ref="postDialog" @editPost="editPostContent" />
-    <edit-profile ref="editDialog" />
+    <edit-profile ref="editDialog" @showNotice="toggleSnackbar"/>
     <post-add-edit ref="postAddEdit" />
+    <v-snackbar
+      v-model="snackbarState"
+      top
+      right
+      dark
+      rounded
+      :color="snackbarColor"
+      :timeout="5000"
+      >{{ snackbarMessage }}</v-snackbar
+    >
   </div>
 </template>
 
@@ -89,12 +102,19 @@ export default {
     },
     editPostContent(post) {
       this.$refs.postAddEdit.openDialog(post);
+    },
+    toggleSnackbar(type, message) {
+      this.snackbarColor = type === 'success' ? 'success' : 'error';
+      this.snackbarMessage = message;
+      this.snackbarState = true;
     }
   },
 
   data() {
     return {
-      
+      snackbarState: false,
+      snackbarMessage: '',
+      snackbarColor: 'error',
     };
   },
   computed: {

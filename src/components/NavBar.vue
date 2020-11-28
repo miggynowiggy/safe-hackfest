@@ -45,13 +45,19 @@
           <template #activator="{on, attrs}">
             <v-btn v-bind="attrs" v-on="on" class="text-none" icon>
               <div class="d-flex align-center pointer-cursor">
-                <v-icon v-text="'fa-user-circle'" color="primary" size="22" />
+                <v-avatar v-if="user.displayPhoto" size="22">
+                  <v-img  :src="user.displayPhoto"/>
+                </v-avatar>
+                <v-icon v-else v-text="'fa-user-circle'" color="primary" size="22" />
               </div>
             </v-btn>
           </template>
           <v-card class="pa-5">
             <div class="d-flex px-3">
-              <v-icon v-text="'fa-user-circle'" size="40" class="mr-4" />
+              <v-avatar v-if="user.displayPhoto" size="40" class="mr-4 mt-2">
+                <v-img :src="user.displayPhoto"/>
+              </v-avatar>
+              <v-icon v-else v-text="'fa-user-circle'" size="40" class="mr-4" />
               <div class="d-flex flex-column">
                 <span class="text-body-1 font-weight-semibold">{{
                   user.name

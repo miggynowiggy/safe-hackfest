@@ -88,7 +88,8 @@
             </div>
           </div>
         </div>
-        <v-btn class="mt-4 text-none" color="primary" @click="saveChanges">
+        <v-btn class="mt-4 text-none" color="primary" 
+          @click="saveChanges" :loading="saveBtnLoading">
           <v-icon v-text="'fa-save'" size="16" left />
           Save Changes
         </v-btn>
@@ -98,6 +99,8 @@
 </template>
 <script>
 import FormLabel from "@/components/FormLabel";
+import clone from 'lodash/cloneDeep';
+
 export default {
   components: {
     FormLabel
@@ -110,21 +113,19 @@ export default {
       fields: {
         provider: {
           name: { name: "Display Name" },
-          email: { type: "email", name: "Contact Email" },
           officeHours: { type: "time", name: "Office Hours" },
           address: { type: "textarea", name: "Address" },
-          mobile: { name: "Mobile Phone" },
+          phoneNumber: { name: "Mobile Phone" },
           telephone: { name: "Telephone" },
           website: { type: "url", name: "Website" }
         },
-        user: {
-          firstName: { name: "First Name" },
-          lastName: { name: "Last Name" },
-          mobile: { name: "Mobile Phone" },
-          telephone: { name: "Telephone" },
+        individual: {
+          name: { name: "Full Name" },
+          phoneNumber: { name: "Mobile Phone" },
           birthday: { type: "date", name: "Birthday (dd-mm-yyyy)" }
         }
-      }
+      },
+      saveBtnLoading: false,
     };
   },
   computed: {
@@ -136,7 +137,8 @@ export default {
         if (newValue) this.info["email"] = this.sampleUsername;
         else this.info["email"] = null;
       }
-    }
+    },
+
   },
   methods: {
     openDialog(info) {
@@ -150,9 +152,71 @@ export default {
 
       this.dialogState = true;
     },
-    saveChanges() {
-      this.dialogState = false;
-    }
+    async saveChanges() {
+      try {
+        this.saveBtnLoading = true;
+        if(this.info.type === 'provider') {
+          await this.saveProvider();
+        
+        } else {
+          await this.saveIndividual();
+        }
+
+        this.saveBtnLoading = false;
+        this.dialogState = false;
+        this.$emit("showNotice", 'success', 'Profile updated!');
+      } catch(error) {
+        this.saveBtnLoading = false;
+        this.dialogState = false;
+        this.$emit("showNotice", 'error', 'Profile not updated!');
+        throw error;
+      }
+    },
+
+    async saveProvider() {
+      try {
+        const { 
+          id, name, email, address, closingTime,
+          openingTime, phoneNumber, telephone, website 
+        } = this.info;
+        
+        await this.$store.dispatch('auth/UPDATE_USER', {
+          id,
+          newDetails: {
+            name, 
+            address: address || null, 
+            phoneNumber: phoneNumber || null, 
+            telephone: telephone || null, 
+            website: website || null,
+            closingTime: closingTime || null,
+            openingTime: openingTime || null
+          }
+        });
+
+        return true;
+      } catch(error) {
+        throw error;
+      }
+    },
+
+    async saveIndividual() {
+      try {
+        const { id, name, email, phoneNumber, birthday } = this.info;
+
+        await this.$store.dispatch('auth/UPDATE_USER', {
+          id,
+          newDetails: {
+            name, 
+            phoneNumber: phoneNumber || null, 
+            birthday: birthday || null
+          }
+        });
+
+        return true;
+      } catch(error) {
+        throw error;
+      }
+    },
   }
 };
 </script>

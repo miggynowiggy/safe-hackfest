@@ -19,15 +19,15 @@
           offset-x="40"
           offset-y="60"
         >
-          <v-icon v-if="!info['avatar']" v-text="'fa-user-circle'" size="150" />
+          <v-icon v-if="!info['displayPhoto']" v-text="'fa-user-circle'" size="150" />
           <div v-else>
             <v-avatar size="150">
-              <img :src="info['avatar']" />
+              <v-img :src="info['displayPhoto']" />
             </v-avatar>
           </div>
           <template #badge>
             <v-btn
-              v-if="info['avatar'] || uploadedPhoto"
+              v-if="info['displayPhoto'] || uploadedPhoto"
               @click="removePhoto"
               outlined
               large
@@ -135,18 +135,36 @@ export default {
     uploadPhoto() {
       this.$refs.photoFile.click();
     },
-    removePhoto() {
+    async removePhoto() {
       if (this.uploadedPhoto) {
         this.uploadedPhoto = null;
         this.$refs.resetForm.reset();
         console.log(this.$refs.photoFile.files[0]);
         return;
       }
+
+      if(this.info.displayPhoto) {
+        await this.$store.dispatch("auth/REMOVE_DISPLAY_PHOTO");
+      }
       //remove if there is an avatar
     },
-    onFileSelect(file) {
-      console.log(file.target.files[0]);
-      this.uploadedPhoto = file.target.files[0];
+    async onFileSelect(file) {
+      try {
+        this.avatarLoading = true;
+        this.uploadedPhoto = file.target.files[0];
+        
+        await this.$store.dispatch("auth/UPDATE_DISPLAY_PHOTO", {
+          file: this.uploadedPhoto,
+        })
+        
+        this.avatarLoading = false;
+        this.$emit("showNotice", "success", "Profile Picture Updated!");
+        
+      } catch(error) {
+        this.avatarLoading = false;
+        this.$emit("showNotice", "error", "Profile Picture not Updated!");
+        throw error;
+      }
     }
   },
   data() {
@@ -163,7 +181,8 @@ export default {
         birthday: { icon: "fa-birthday-cake" },
         telephone: { icon: "fa-phone" }
       },
-      uploadedPhoto: null
+      uploadedPhoto: null,
+      avatarLoading: false,
     };
   }
 };
