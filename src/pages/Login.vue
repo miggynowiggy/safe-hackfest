@@ -44,7 +44,7 @@
           >Login</v-btn
         >
       </v-form>
-      <div>
+      <!-- <div>
         <div class="d-flex align-center">
           <v-divider />
           <span class="mx-5 text-caption">Or, connect using</span>
@@ -68,7 +68,7 @@
             Facebook
           </v-btn>
         </div>
-      </div>
+      </div> -->
     </div>
     <v-snackbar
       v-model="snackBarState"
@@ -78,7 +78,8 @@
       rounded
       color="error"
       :timeout="5000"
-    >{{ snackBarMessage }}</v-snackbar>
+      >{{ snackBarMessage }}</v-snackbar
+    >
   </auth-container>
 </template>
 
@@ -123,19 +124,19 @@ export default {
         ? "fa-eye-slash"
         : "fa-eye";
     },
-    async loginThroughGoogle() {
-      try {
-        this.googleLoading = true;
-        await this.$store.dispatch("auth/USE_GOOGLE_AUTH");
-        this.googleLoading = false;
-        this.$router.push({ name: "Home" });
-      } catch (error) {
-        this.googleLoading = false;
-        this.snackBarState = true;
-        this.snackBarMessage = error.message;
-        throw error;
-      }
-    },
+    // async loginThroughGoogle() {
+    //   try {
+    //     this.googleLoading = true;
+    //     await this.$store.dispatch("auth/USE_GOOGLE_AUTH");
+    //     this.googleLoading = false;
+    //     this.$router.push({ name: "Home" });
+    //   } catch (error) {
+    //     this.googleLoading = false;
+    //     this.snackBarState = true;
+    //     this.snackBarMessage = error.message;
+    //     throw error;
+    //   }
+    // },
     async loginThroughEmailAndPassword() {
       try {
         this.loginBtnLoading = true;
