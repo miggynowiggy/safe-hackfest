@@ -33,7 +33,7 @@
             <span class="text-body-2">Help</span>
           </div>
         </v-btn>
-        <v-btn class="text-none" icon :to="{name: 'Home'}">
+        <v-btn class="text-none" icon @click="goToHomePage">
           <v-icon v-text="'fa-home'" color="primary" size="22" />
         </v-btn>
         <v-menu
@@ -110,6 +110,8 @@ export default {
       this.$router.push({ name: "Login" });
     },
     goToHomePage() {
+      if (this.$route.name === "Home")
+        return;
       this.$router.push({ name: "Home" });
     },
     async logout() {
