@@ -4,7 +4,10 @@
     <v-main>
       <v-container>
         <search-and-filter />
+        <v-divider v-if="!posts.length" class="mt-5 mb-5" />
+        <p v-if="!posts.length" class="text-center font-italic primary--text" v-text="'No posts yet...'"></p>
         <masonry
+          v-else
           class="my-10"
           :gutter="{ default: '30px' }"
           :cols="{ default: 4, 1264: 3, 960: 2, 600: 1 }"
