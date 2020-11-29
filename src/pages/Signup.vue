@@ -200,11 +200,11 @@ export default {
         let errorMessage;
         if(this.selectedUser === "provider" && !this.provider.company) {
           errorMessage = "Company/groups/institution is required.";
-        
-        } else if(!this.user.firstName) {
+
+        } else if(this.selectedUser === "user" && !this.user.firstName) {
           errorMessage = "First name is required.";
-        
-        } else if(!this.user.lastName) {
+
+        } else if(this.selectedUser === "user" && !this.user.lastName) {
           errorMessage = "Last name is required.";
         }
 
@@ -216,7 +216,7 @@ export default {
 
         if(this.selectedUser === "provider"){
           await this.$store.dispatch("auth/SIGN_UP", this.provider);
-          
+
         } else {
           await this.$store.dispatch("auth/SIGN_UP", this.user);
         }
