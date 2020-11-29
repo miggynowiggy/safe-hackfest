@@ -233,6 +233,18 @@ export default {
       try { 
         this.saveLoading = true;
 
+        if(!this.postContent.title) {
+          this.$emit("showNotice", "error", "Please indicate Post Title");
+          this.saveLoading = false;
+          return; 
+        }
+
+        if(!this.postContent.description) {
+          this.$emit("showNotice", "error", "Please indicate Post Description");
+          this.saveLoading = false;
+          return; 
+        }
+
         if(!this.postContent.type) {
           this.$emit("showNotice", "error", "Please indicate Post Category");
           this.saveLoading = false;
