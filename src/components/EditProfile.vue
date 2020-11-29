@@ -1,18 +1,24 @@
 <template>
-  <v-dialog width="600" v-model="dialogState" overlay-opacity="0.95" scrollable>
+  <v-dialog width="600" v-model="dialogState" overlay-opacity="0.95" scrollable :persistent="toggleGreetings">
     <v-card height="100%">
       <div class="d-flex flex-row-reverse">
-        <v-btn class="mr-5 mt-3" icon @click="dialogState = !dialogState" large>
+        <v-btn v-show="!toggleGreetings" class="mr-5 mt-3" icon 
+          @click="dialogState = !dialogState" large>
           <v-icon v-text="'fa-times'" />
         </v-btn>
+      </div>
+      <div v-if="toggleGreetings" class="px-10 mt-4 mb-4">
+        <v-sheet color="success" rounded class="px-4 py-1" dark>
+          <p 
+            class="font-italic text-body-2 text-center my-1"
+            v-text="'Welcome! Thanks for registering to our platform, please complete your profile before proceeding.'"
+          ></p>
+        </v-sheet>
       </div>
       <v-form class="px-10 pb-10">
         <div class="d-flex align-center">
           <v-icon v-text="'fa-user-edit'" color="primary" size="18" left />
           <span class="text-h6 primary--text">Edit Profile</span>
-        </div>
-        <div>
-          <!-- TODO: file upload here-->
         </div>
         <div class="mt-5">
           <div
@@ -108,7 +114,7 @@ export default {
   data() {
     return {
       info: {},
-      sampleUsername: "valenzuela.city@gov.ph",
+      sampleUsername: "",
       dialogState: false,
       fields: {
         provider: {
@@ -126,6 +132,7 @@ export default {
         }
       },
       saveBtnLoading: false,
+      toggleGreetings: false,
     };
   },
   computed: {
@@ -149,6 +156,12 @@ export default {
       }
 
       this.info = Object.assign({}, info);
+
+      //Notify first-time users to edit their profile before proceeding
+      this.toggleGreetings = 
+        !info.hasOwnProperty("updated_at") || !info.updated_at
+          ? true 
+          : false;
 
       this.dialogState = true;
     },
@@ -188,13 +201,14 @@ export default {
             phoneNumber: phoneNumber || null,
             telephone: telephone || null,
             website: website || null,
-            closingTime: closingTime || null,
-            openingTime: openingTime || null
+            officeHours: `${openingTime} - ${closingTime}` || null,
+            updated_at: Date.now()
           }
         });
-
+        this.toggleGreetings = false;
         return true;
       } catch(error) {
+        this.toggleGreetings = false;
         throw error;
       }
     },
@@ -207,12 +221,14 @@ export default {
           newDetails: {
             name,
             phoneNumber: phoneNumber || null,
-            birthday: birthday || null
+            birthday: birthday || null,
+            updated_at: Date.now()
           }
         });
-
+        this.toggleGreetings = false;
         return true;
       } catch(error) {
+        this.toggleGreetings = false;
         throw error;
       }
     },
