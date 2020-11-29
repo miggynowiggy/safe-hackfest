@@ -233,6 +233,12 @@ export default {
       try { 
         this.saveLoading = true;
 
+        if(!this.postContent.type) {
+          this.$emit("showNotice", "error", "Please indicate Post Category");
+          this.saveLoading = false;
+          return; 
+        }
+
         if(this.formState === 'add') {
           await this.$store.dispatch("posts/ADD_POST", {
             content: this.postContent,
