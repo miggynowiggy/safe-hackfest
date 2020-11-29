@@ -103,7 +103,7 @@ export default {
       data: { email: "", password: "" },
       showPassword: false,
       googleLoading: false,
-      loginBtnLoading: false,
+      loginBtnLoading: false
     };
   },
   methods: {
@@ -119,19 +119,6 @@ export default {
         ? "fa-eye-slash"
         : "fa-eye";
     },
-    // async loginThroughGoogle() {
-    //   try {
-    //     this.googleLoading = true;
-    //     await this.$store.dispatch("auth/USE_GOOGLE_AUTH");
-    //     this.googleLoading = false;
-    //     this.$router.push({ name: "Home" });
-    //   } catch (error) {
-    //     this.googleLoading = false;
-    //     this.snackBarState = true;
-    //     this.snackBarMessage = error.message;
-    //     throw error;
-    //   }
-    // },
     async loginThroughEmailAndPassword() {
       try {
         this.loginBtnLoading = true;
@@ -139,7 +126,6 @@ export default {
         this.data = { email: null, password: null };
         this.loginBtnLoading = false;
         this.$router.push({ name: "Home" });
-
       } catch (error) {
         this.loginBtnLoading = false;
         this.toggleNotice("error", error.message);

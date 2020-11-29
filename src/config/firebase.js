@@ -1,8 +1,8 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
-import 'firebase/storage';
-import 'firebase/functions';
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
+import "firebase/storage";
+import "firebase/functions";
 
 const config = {
   apiKey: process.env.VUE_APP_apiKey,
@@ -16,9 +16,7 @@ const config = {
 
 if (!firebase.apps.length) {
   firebase.initializeApp(config);
-  firebase.firestore().enablePersistence().catch(error => {
-    console.log(error);
-  });
+  firebase.firestore().enablePersistence();
 }
 
 export const AUTH = firebase.auth();
@@ -26,5 +24,3 @@ export const DB = firebase.firestore();
 export const STORAGE = firebase.storage();
 export const FUNCTIONS = firebase.functions();
 export const FB = firebase;
-
-

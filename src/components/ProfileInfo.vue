@@ -19,7 +19,11 @@
           offset-x="40"
           offset-y="60"
         >
-          <v-icon v-if="!info['displayPhoto']" v-text="'fa-user-circle'" size="150" />
+          <v-icon
+            v-if="!info['displayPhoto']"
+            v-text="'fa-user-circle'"
+            size="150"
+          />
           <div v-else>
             <v-avatar size="150">
               <v-img :src="info['displayPhoto']" />
@@ -128,7 +132,6 @@
 export default {
   methods: {
     editProfile() {
-      console.log(this.info);
       const { posts, ...profileInfo } = this.info;
       this.$emit("editProfile", profileInfo);
     },
@@ -139,33 +142,30 @@ export default {
       if (this.uploadedPhoto) {
         this.uploadedPhoto = null;
         this.$refs.resetForm.reset();
-        console.log(this.$refs.photoFile.files[0]);
         return;
       }
 
-      if(this.info.displayPhoto) {
+      if (this.info.displayPhoto) {
         await this.$store.dispatch("auth/REMOVE_DISPLAY_PHOTO");
       }
-      //remove if there is an avatar
     },
     async onFileSelect(file) {
       try {
         this.avatarLoading = true;
         this.uploadedPhoto = file.target.files[0];
-        
+
         await this.$store.dispatch("auth/UPDATE_DISPLAY_PHOTO", {
-          file: this.uploadedPhoto,
-        })
-        
+          file: this.uploadedPhoto
+        });
+
         this.avatarLoading = false;
         this.$emit("showNotice", "success", "Profile Picture Updated!");
-        
-      } catch(error) {
+      } catch (error) {
         this.avatarLoading = false;
         this.$emit("showNotice", "error", "Profile Picture not Updated!");
         throw error;
       }
-    },
+    }
   },
   data() {
     return {
@@ -182,13 +182,13 @@ export default {
         telephone: { icon: "fa-phone" }
       },
       uploadedPhoto: null,
-      avatarLoading: false,
+      avatarLoading: false
     };
   },
   computed: {
     info() {
       const user = this.$store.getters["auth/GET_USER"];
-      if(user.hasOwnProperty('officeHours')) {
+      if (user.hasOwnProperty("officeHours")) {
         user.openingTime = user.officeHours.split(" - ")[0];
         user.closingTime = user.officeHours.split(" - ")[1];
       }
