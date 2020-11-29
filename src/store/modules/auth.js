@@ -118,7 +118,7 @@ export default {
 				throw error;
 			}
 		},
-		async UPDATE_USER({ state, commit }, { id, newDetails }) {
+		async UPDATE_USER({ commit }, { id, newDetails }) {
 			try {
 				await DB.collection("users")
 					.doc(id)
