@@ -18,3 +18,8 @@ yarn build
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+### Testing Site
+Please do visit this link for testing or viewing [link](https://safe-hackfest.web.app/welcome)
+
