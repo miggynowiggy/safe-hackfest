@@ -116,26 +116,20 @@
         >Signup</v-btn
       >
     </v-form>
-    <v-snackbar
-      v-model="snackBarState"
-      top
-      right
-      dark
-      rounded
-      color="error"
-      :timeout="5000"
-      >{{ snackBarMessage }}</v-snackbar
-    >
+    <notice ref="snackbarNotice" />
   </auth-container>
 </template>
 
 <script>
 import AuthContainer from "@/components/AuthContainer";
 import FormLabel from "@/components/FormLabel";
+import Notice from "@/components/Notice";
+
 export default {
   components: {
     AuthContainer,
-    FormLabel
+    FormLabel,
+    Notice
   },
   data: function() {
     return {
@@ -178,14 +172,11 @@ export default {
       provider: { company: null, email: "", password: "", isAgree: null },
       showPassword: false,
       registerLoading: false,
-      snackBarState: false,
-      snackBarMessage: null,
     };
   },
   methods: {
-    openSnackBar(message) {
-      this.snackBarMessage = message;
-      this.snackBarState = true;
+    toggleNotice(type, message) {
+      this.$refs.snackbarNotice.open(type, message);
     },
     cleanFormFields(value) {
       if (value === "provider")
@@ -207,25 +198,25 @@ export default {
         this.registerLoading = true;
 
         let errorMessage;
-
-        if(this.selectedUser === "provider"){
-          if(!this.provider.company)
-            errorMessage = "Company/groups/institution is required.";
-        } else {
-          if(!this.user.firstName)
-            errorMessage = "First name is required.";
-          else if(!this.user.lastName)
-            errorMessage = "Last name is required.";
+        if(this.selectedUser === "provider" && !this.provider.company) {
+          errorMessage = "Company/groups/institution is required.";
+        
+        } else if(!this.user.firstName) {
+          errorMessage = "First name is required.";
+        
+        } else if(!this.user.lastName) {
+          errorMessage = "Last name is required.";
         }
 
-        if (errorMessage) {
-          this.openSnackBar(errorMessage);
+        if(errorMessage) {
+          this.toggleNotice("error", errorMessage);
           this.registerLoading = false;
-          return
+          return;
         }
 
         if(this.selectedUser === "provider"){
           await this.$store.dispatch("auth/SIGN_UP", this.provider);
+          
         } else {
           await this.$store.dispatch("auth/SIGN_UP", this.user);
         }
@@ -234,7 +225,7 @@ export default {
         this.$router.push({ name: "Home" });
       } catch (error) {
         this.registerLoading = false;
-        this.openSnackBar(error.message);
+        this.toggleNotice("error", error.message);
         throw error;
       }
     }

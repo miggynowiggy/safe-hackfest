@@ -14,10 +14,12 @@
             v-for="post in posts"
             :key="post.id"
             @openPost="openPostDialog"
+            @showNotice="toggleNotice"
           />
         </masonry>
       </v-container>
-      <full-post ref="postDialog" />
+      <full-post ref="postDialog" @showNotice="toggleNotice" />
+      <notice ref="snackbarNotice" />
     </v-main>
   </div>
 </template>
@@ -27,13 +29,15 @@ import SearchAndFilter from "@/components/SearchAndFilter.vue";
 import NavBar from "@/components/NavBar.vue";
 import PostCard from "@/components/PostCard.vue";
 import FullPost from "@/components/FullPost.vue";
+import Notice from "@/components/Notice.vue";
 
 export default {
   components: {
     SearchAndFilter,
     NavBar,
     PostCard,
-    FullPost
+    FullPost,
+    Notice
   },
   name: "Home",
   data: function() {
@@ -42,6 +46,9 @@ export default {
   methods: {
     async openPostDialog(post) {
       this.$refs.postDialog.openDialog();
+    },
+    toggleNotice(type, message) {
+      this.$refs.snackbarNotice.open(type, message);
     }
   },
   computed: {

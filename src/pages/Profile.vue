@@ -59,16 +59,7 @@
     <full-post ref="postDialog" @editPost="editPostContent" />
     <edit-profile ref="editDialog" @showNotice="toggleSnackbar"/>
     <post-add-edit ref="postAddEdit" @showNotice="toggleSnackbar"/>
-    <v-snackbar
-      v-model="snackbarState"
-      top
-      right
-      dark
-      rounded
-      :color="snackbarColor"
-      :timeout="5000"
-      >{{ snackbarMessage }}</v-snackbar
-    >
+    <notice ref="snackbarNotice" />
   </div>
 </template>
 
@@ -79,6 +70,7 @@ import EditProfile from "@/components/EditProfile";
 import PostAddEdit from "@/components/PostAddEdit";
 import PostCard from "@/components/PostCard";
 import FullPost from "@/components/FullPost";
+import Notice from "@/components/Notice";
 
 export default {
   components: {
@@ -87,7 +79,8 @@ export default {
     EditProfile,
     PostAddEdit,
     PostCard,
-    FullPost
+    FullPost,
+    Notice
   },
 
   methods: {
@@ -104,9 +97,7 @@ export default {
       this.$refs.postAddEdit.openDialog(post, 'edit');
     },
     toggleSnackbar(type, message) {
-      this.snackbarColor = type === 'success' ? 'success' : 'error';
-      this.snackbarMessage = message;
-      this.snackbarState = true;
+      this.$refs.snackbarNotice.open(type, message);
     }
   },
 

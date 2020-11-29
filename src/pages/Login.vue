@@ -70,26 +70,20 @@
         </div>
       </div> -->
     </div>
-    <v-snackbar
-      v-model="snackBarState"
-      top
-      right
-      dark
-      rounded
-      color="error"
-      :timeout="5000"
-      >{{ snackBarMessage }}</v-snackbar
-    >
+    <notice ref="snackbarNotice" />
   </auth-container>
 </template>
 
 <script>
 import AuthContainer from "@/components/AuthContainer";
 import FormLabel from "@/components/FormLabel";
+import Notice from "@/components/Notice";
+
 export default {
   components: {
     AuthContainer,
-    FormLabel
+    FormLabel,
+    Notice
   },
   data: () => {
     return {
@@ -110,14 +104,11 @@ export default {
       showPassword: false,
       googleLoading: false,
       loginBtnLoading: false,
-      snackBarMessage: null,
-      snackBarState: false
     };
   },
   methods: {
-    openSnackBar(message) {
-      this.snackBarMessage = message;
-      this.snackBarState = true;
+    toggleNotice(type, message) {
+      this.$refs.snackbarNotice.open(type, message);
     },
     onClickAppend() {
       this.showPassword = !this.showPassword;
@@ -151,7 +142,7 @@ export default {
 
       } catch (error) {
         this.loginBtnLoading = false;
-        this.openSnackBar(error.message);
+        this.toggleNotice("error", error.message);
         throw error;
       }
     }
