@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "safe-hackfest",
     "public": "dist",
     "ignore": [
       "firebase.json",
