@@ -222,7 +222,8 @@ export default {
         }
 
         this.registerLoading = false;
-        this.$router.push({ name: "Home" });
+        this.$router.push({ name: "Profile" });
+        
       } catch (error) {
         this.registerLoading = false;
         this.toggleNotice("error", error.message);

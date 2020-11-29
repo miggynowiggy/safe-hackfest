@@ -5,7 +5,7 @@
       <v-container>
         <v-row justify="center">
           <v-col cols="12" md="10" xl="8">
-            <profile-info :info="info" 
+            <profile-info
               @editProfile="editProfileInfo"
               @showNotice="toggleNotice" 
             />
@@ -70,6 +70,7 @@
 </template>
 
 <script>
+import clone from 'lodash/cloneDeep';
 import NavBar from "@/components/NavBar";
 import ProfileInfo from "@/components/ProfileInfo";
 import EditProfile from "@/components/EditProfile";
@@ -87,6 +88,13 @@ export default {
     PostCard,
     FullPost,
     Notice
+  },
+
+  mounted() {
+    if(!this.info.hasOwnProperty("updated_at") || !this.info.updated_at) {
+      const user = clone(this.info);
+      this.editProfileInfo(user);
+    }
   },
 
   methods: {
