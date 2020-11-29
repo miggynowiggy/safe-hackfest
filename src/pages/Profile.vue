@@ -7,7 +7,7 @@
           <v-col cols="12" md="10" xl="8">
             <profile-info :info="info" 
               @editProfile="editProfileInfo"
-              @showNotice="toggleSnackbar" 
+              @showNotice="toggleNotice" 
             />
             <div class="my-10">
               <div class="d-flex align-center" v-if="isUserProvider">
@@ -19,7 +19,7 @@
                 <span class="text-h6">Saved Posts</span>
               </div>
             </div>
-            <div>
+            <div v-if="posts.length">
               <masonry
                 class="my-10"
                 :gutter="{ default: '30px' }"
@@ -36,8 +36,14 @@
                   :post="post"
                   @openPost="openPostDialog"
                   @editPost="editPostContent"
+                  @showNotice="toggleNotice"
                 />
               </masonry>
+            </div>
+            <div v-else>
+              <p v-text="'No posts yet...'" 
+                class="text-subtitle font-italic primary--text text-center"
+              ></p>
             </div>
             <v-fab-transition v-if="isUserProvider">
               <v-btn
@@ -56,9 +62,9 @@
         </v-row>
       </v-container>
     </v-main>
-    <full-post ref="postDialog" @editPost="editPostContent" />
-    <edit-profile ref="editDialog" @showNotice="toggleSnackbar"/>
-    <post-add-edit ref="postAddEdit" @showNotice="toggleSnackbar"/>
+    <full-post ref="postDialog" @editPost="editPostContent" @showNotice="toggleNotice" />
+    <edit-profile ref="editDialog" @showNotice="toggleNotice" />
+    <post-add-edit ref="postAddEdit" @showNotice="toggleNotice" />
     <notice ref="snackbarNotice" />
   </div>
 </template>
@@ -96,18 +102,11 @@ export default {
     editPostContent(post) {
       this.$refs.postAddEdit.openDialog(post, 'edit');
     },
-    toggleSnackbar(type, message) {
+    toggleNotice(type, message) {
       this.$refs.snackbarNotice.open(type, message);
     }
   },
 
-  data() {
-    return {
-      snackbarState: false,
-      snackbarMessage: '',
-      snackbarColor: 'error',
-    };
-  },
   computed: {
     info() {
       return this.$store.getters["auth/GET_USER"];

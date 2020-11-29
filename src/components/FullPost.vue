@@ -139,7 +139,7 @@
             v-text="post.author.name"
           />
         </div>
-        <p class="text-body-2 my-3" v-text="post.description" />
+        <div class="text-body-2 my-5" v-text="post.description" />
         <div class="my-5">
           <div class="mb-5">
             <v-icon
@@ -176,7 +176,7 @@
             <v-icon v-text="'fa-address-book'" size="16" left color="primary" />
             <span v-text="'Contact Details'" class="mt-2 text-subtitle-2" />
             
-            <div class="text-body-2 mt-3 pre-text-layout" v-if="post.email || post.author.email">
+            <div class="text-body-2 mt-2 pre-text-layout" v-if="post.email || post.author.email">
               <span v-text="`Email: `" />
               <a :href="`mailto:${post.email || post.author.email}`">
                 <span v-text="`${post.email || post.author.email}`" />
@@ -220,11 +220,11 @@ export default {
     async deletePost() {
       try {
         await this.$store.dispatch("posts/DELETE_POST", this.post);
-        this.dialogState = false;
         this.$emit("showNotice", "success", "Post deleted!");
-      } catch(error) {
         this.dialogState = false;
+      } catch(error) {
         this.$emit("showNotice", "error", "Post can't be deleted!");
+        this.dialogState = false;
         throw error;
       }
     },

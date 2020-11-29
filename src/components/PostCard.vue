@@ -152,10 +152,8 @@ export default {
     async deletePost() {
       try {
         await this.$store.dispatch("posts/DELETE_POST", this.post);
-        this.dialogState = false;
-        this.$emit("showNotice", "success", "Post deleted!");
+        
       } catch(error) {
-        this.dialogState = false;
         this.$emit("showNotice", "error", "Post can't be deleted!");
         throw error;
       }
