@@ -27,12 +27,6 @@
         </v-btn>
       </div>
       <div v-else>
-        <v-btn class="text-none mr-3" text rounded>
-          <div class="d-flex align-center pointer-cursor">
-            <v-icon v-text="'far fa-question-circle'" left />
-            <span class="text-body-2">Help</span>
-          </div>
-        </v-btn>
         <v-btn class="text-none" icon @click="goToHomePage">
           <v-icon v-text="'fa-home'" color="primary" size="22" />
         </v-btn>
@@ -81,10 +75,6 @@
             </div>
             <v-divider class="my-2" />
             <v-list class="text-caption font-weight-medium" nav>
-              <v-list-item dense link color="secondary">
-                <v-icon v-text="'fa-cog'" size="16" class="mr-5" />
-                <span>Settings</span>
-              </v-list-item>
               <v-list-item dense link @click="logout">
                 <v-icon v-text="'fa-sign-out-alt'" size="16" class="mr-5" />
                 <span>Logout</span>
