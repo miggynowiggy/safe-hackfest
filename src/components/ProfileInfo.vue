@@ -72,6 +72,11 @@
               class="text-decoration-none primary--text"
               target="_blank"
             />
+            <span
+              v-else-if="key === 'officeHours'"
+              class="text-body-2"
+              v-text="info[key]"
+            />
             <span v-else class="text-body-2" v-text="info[key]" />
           </div>
         </template>
@@ -121,11 +126,6 @@
 
 <script>
 export default {
-  props: {
-    info: {
-      type: Object
-    }
-  },
   methods: {
     editProfile() {
       console.log(this.info);
@@ -165,7 +165,7 @@ export default {
         this.$emit("showNotice", "error", "Profile Picture not Updated!");
         throw error;
       }
-    }
+    },
   },
   data() {
     return {
@@ -184,6 +184,16 @@ export default {
       uploadedPhoto: null,
       avatarLoading: false,
     };
+  },
+  computed: {
+    info() {
+      const user = this.$store.getters["auth/GET_USER"];
+      if(user.hasOwnProperty('officeHours')) {
+        user.openingTime = user.officeHours.split(" - ")[0];
+        user.closingTime = user.officeHours.split(" - ")[1];
+      }
+      return user;
+    }
   }
 };
 </script>
